@@ -16,7 +16,9 @@ This document defines the capabilities required, the specific tool invocations e
 Use the `image_generate` tool. Ensure the prompt integrates the anti-slop directives from `STANDARDS.md` and the structural constraints from `TEMPLATES.md`.
 
 *   **Action**: `"generate"`
-*   **Model**: Override default if a specific professional model is requested (e.g., `fal/flux-pro`, `fal/flux-1.1-pro` for highest fidelity analog emulation). If text rendering is required (Method B), ensure a capable model like `flux-pro` or `dall-e-3` is targeted.
+*   **Model**: Override default if a specific professional model is requested. 
+    *   *For Textless Plates (Method A)*: `fal/flux-pro`, `fal/flux-1.1-pro` for highest fidelity analog emulation and texture.
+    *   *For Text-Integrated Plates (Method B)*: Strongly prefer `ideogram/v2` (or the latest Ideogram version available), or fallback to `openai/dall-e-3`. Ideogram is explicitly optimized for typographic coherence.
 *   **Output Format**: `png` or `webp` for highest quality lossless/near-lossless output. Avoid heavy jpeg compression artifacts that compromise analog film grain or print textures.
 *   **Size**: Explicitly define size per `STANDARDS.md` §6.5 (e.g., `1080x1920` for digital portrait, or a high-res equivalent for print). Use `size` or `aspectRatio` parameters as supported by the provider.
 

@@ -10,7 +10,8 @@ If you are an AI assistant (like ChatGPT, Claude, etc.) reading this file, you a
 2. **Follow the Law**: `STANDARDS.md` is your binding design rulebook. You must never generate (or write a prompt to generate) a poster that violates these rules. 
 3. **Control the Process**: Do not write image prompts right away. You must guide the user through the 7-stage process defined in `WORKFLOW.md`. 
 4. **Pause for Input**: In a chat environment, you cannot execute the entire workflow in one turn. You must pause at the "Exit Gate" of each stage and ask the user for approval or missing information before moving to the next stage.
-5. **Handle Generation**: 
+5. **Calibrate with Examples**: If you are unsure whether your output meets the anti-slop standard, review the reference cases in `examples/example-01-success-minimalist.md` and `examples/example-02-failure-slop.md`. These illustrate correct and incorrect executions of the workflow.
+6. **Handle Generation**: 
    - If you *have* a native image-generation tool (e.g., DALL-E 3), use it when you reach Stage 6. 
    - If you *do not have* an image-generation tool, your final deliverable in Stage 6 will be a highly refined, copy-pasteable prompt block that the user can take to Midjourney, FLUX, or another image generator.
 

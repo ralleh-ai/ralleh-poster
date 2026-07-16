@@ -12,7 +12,7 @@ This document provides ready-to-use, highly structured style templates for gener
 *   **Trope Prevention**: Zero glowing elements, zero bevels/shadows, zero gradients.
 *   **Prompt Template**:
     ```text
-    A high-end Swiss Minimalist poster plate, mid-century International Typographic Style. Asymmetric grid composition, bold geometric flat circles and structural lines. Solid [Color 1] background, with design elements in flat [Color 2] and a single accent in [Color 3]. Completely flat 2D graphic design. Zero gradients, zero drop shadows, zero glow. Beautiful paper texture, matte screenprint finish. Textless background plate.
+    A high-end Swiss Minimalist poster plate, mid-century International Typographic Style. Asymmetric grid composition, bold geometric flat circles and structural lines. Solid [Color 1] background, with design elements in flat [Color 2] and a single accent in [Color 3]. Completely flat 2D graphic design, strict negative space. Zero gradients, zero drop shadows, zero glow, no photorealism, no 3D elements. Beautiful paper texture, matte screenprint finish. Textless background plate.
     ```
 
 ---
@@ -25,7 +25,7 @@ This document provides ready-to-use, highly structured style templates for gener
 *   **Trope Prevention**: No smooth airbrushed gradients, no digital vector-flat cartoon look, no hyper-rendered metallic sheen.
 *   **Prompt Template**:
     ```text
-    An authentic 1970s concert gig poster plate. Handcrafted silkscreen print style, textured Risograph overlay, visible ink bleed, subtle dot halftone patterns, and warm paper grain. A central stylized graphic of [Subject] rendered in bold, flat layers with organic imperfections. Colors: warm mustard, deep navy, and terracotta red on a cream canvas background. Zero digital rendering, zero plastic gloss, textless plate.
+    An authentic 1970s concert gig poster plate. Handcrafted silkscreen print style, textured Risograph overlay, visible ink bleed, subtle dot halftone patterns, and warm paper grain. A central stylized graphic of [Subject] rendered in bold, flat layers with organic imperfections. Colors: warm mustard, deep navy, and terracotta red on a cream canvas background. Zero digital rendering, zero plastic gloss, no volumetric lighting, no lens flares. Textless plate.
     ```
 
 ---
@@ -51,7 +51,7 @@ This document provides ready-to-use, highly structured style templates for gener
 *   **Trope Prevention**: Avoid stock vector "corporate abstract" blobs or shiny neon-wave shapes.
 *   **Prompt Template**:
     ```text
-    A contemporary abstract conceptual art poster plate. Elegant, minimalist overlapping translucent shapes, soft analog-dithered grain gradients, and fine-line geometric vector guides. The composition represents [Abstract Theme/Concept] through high-end fine art design. Palette of deep midnight blue, muted plum, and warm sandstone sand. Very clean, quiet elegance, textured matte paper, textless.
+    A contemporary abstract conceptual art poster plate. Elegant, minimalist overlapping translucent shapes, soft analog-dithered grain gradients, and fine-line geometric vector guides. The composition represents [Abstract Theme/Concept] through high-end fine art design. Palette of deep midnight blue, muted plum, and warm sandstone sand. Very clean, quiet elegance, textured matte paper, zero neon, zero glowing elements. Textless plate.
     ```
 
 ---

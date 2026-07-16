@@ -8,12 +8,28 @@ This repository enforces strict analog design principles to ensure AI-generated 
 
 ## 🏗️ Repository Architecture
 
-This skill operates strictly on four authoritative documents. All generation must comply with this framework:
+This skill operates strictly on authoritative documents and reference examples. All generation must comply with this framework:
 
 1. **`STANDARDS.md`** — The binding design law. Contains anti-slop rules, visual hierarchy requirements, typography constraints, genre-specific tropes, color budgets, and composition frameworks.
 2. **`TEMPLATES.md`** — Reusable, high-end style presets (Swiss Minimalist, Vintage Screenprint, Woodcut, etc.) with copy-ready prompt blocks and aesthetic rules.
 3. **`WORKFLOW.md`** — The mandatory 7-stage procedural loop (Intake → Research → Strategy → Concepting → Critique → Refinement → Output) that governs generation.
 4. **`TOOLS.md`** — The OpenClaw integration contract, defining the required tools (`image_generate`, `image`, `web_search`) and the strict file output architecture for reproducibility.
+
+**Directories:**
+*   `examples/` — Few-shot calibration material including success/failure cases and end-to-end runs to tune AI evaluation criteria.
+*   `docs/` — Usage, installation, and deployment reference guides for OpenClaw gateway configuration.
+
+---
+
+## ⚙️ Installation & Usage
+
+### OpenClaw Gateway Integration
+This repository functions natively as a dynamically loaded OpenClaw skill. For detailed instructions on adding it to your OpenClaw JSON config, setting up agent profiles, and invoking it (Direct User vs Sub-Agent delegation), read the guide:
+👉 **[OpenClaw Installation Guide (`docs/installation.md`)](docs/installation.md)**
+
+### End-to-End Example Runs
+To understand the exact outputs expected from each of the 7 stages in `WORKFLOW.md`, review the complete session logs:
+👉 **[Example 03: End-to-End Run (`examples/example-03-end-to-end.md`)](examples/example-03-end-to-end.md)**
 
 ---
 

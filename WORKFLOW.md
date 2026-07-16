@@ -18,6 +18,7 @@ Do not make assumptions about event details. Gather raw metadata and establish c
 - [ ] **Venue**: Full name, address, and city (or virtual platform).
 - [ ] **Billing / Performers**: Order of importance, secondary names, and sponsors.
 - [ ] **Genre / Event Type**: Categorize (e.g., Music, Theater, Market, Sports).
+- [ ] **Reference Images**: Ask the user if they have reference images or mood boards they wish to upload (e.g., brand guidelines, past posters). Ensure they are ingested into context if provided.
 - [ ] **Style Constraints**: Identify requested style (map to `TEMPLATES.md` if possible) and explicitly note forbidden tropes per `STANDARDS.md` §4.
 - [ ] **Format / Specs**: Intended output medium (Digital/Print, aspect ratio).
 
@@ -105,11 +106,12 @@ Proceed to Stage 6 only when a single concept has passed the critique rubric and
 Execute the selected concept and iterate until the output is flawless.
 
 ### 6.1 Action Steps
-1. Execute the image generation using the prompt developed in Stage 4.
-2. Review the resulting plate using vision capabilities (or self-critique).
-3. Check against the Stage 5 rubric. If the image model introduced slop, hallucinated text, or ignored color constraints, *reject the plate*.
-4. Adjust the prompt (e.g., increase weights on anti-slop terms, simplify the metaphor, enforce "textless plate") and regenerate.
-5. Repeat until a plate passes the critique rubric completely.
+1. **Model Selection**: If the strategy uses Method B (Direct Text), explicitly route the request to a typography-capable model (prefer `ideogram/v2`). If Method A (Textless), use a high-fidelity texture model (prefer `flux-pro`).
+2. Execute the image generation using the prompt developed in Stage 4.
+3. Review the resulting plate using vision capabilities (or self-critique).
+4. Check against the Stage 5 rubric. If the image model introduced slop, hallucinated text, or ignored color constraints, *reject the plate*.
+5. Adjust the prompt (e.g., increase weights on anti-slop terms, simplify the metaphor, enforce "textless plate") and regenerate.
+6. Repeat until a plate passes the critique rubric completely.
 
 ### 6.2 Exit Gate
 Proceed to Stage 7 only when a generated plate passes the vision-critique for slop, hierarchy, typography space, and color constraints. Never advance a flawed plate. *(Note: If you are a web LLM without native image generation, your exit gate is providing the final refined prompt to the user and asking them to run it).*

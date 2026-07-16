@@ -83,11 +83,12 @@ Selecting the right typographic render strategy is critical. The two acceptable 
 **Method A — Textless Plate Generation (Strongly Preferred)**
 > Generate the visual background plate completely free of any text elements. All typographic content is applied in a dedicated post-processing, canvas, or layout step using proper vector type tools. This eliminates all risk of hallucinated glyphs and provides total control over font selection, kerning, sizing, and contrast.
 
-**Method B — Direct High-Fidelity Text Rendering**
-> If the image model demonstrably supports high-fidelity text generation (e.g., FLUX-based models with short, specific inputs), direct rendering of a single, short main header is permitted. Constraints:
+**Method B — Direct High-Fidelity Text Rendering (Ideogram or Top-Tier Models)**
+> If the image model demonstrably excels at typographic fidelity (e.g., Ideogram v2, FLUX.1 [pro], DALL-E 3), direct rendering of a single, short main header is permitted. Constraints:
 > *   Maximum 8 words.
 > *   Short headline only — no event details in the generated image.
 > *   The plate must pass a vision-critique step confirming zero character distortion before use.
+> *   **Note**: Prefer Ideogram when explicit typography is required, as its architecture is specifically optimized for rendering coherent text.
 
 **Method C (Forbidden)**
 > Allowing the image model to render full event details, long strings, or decorative body text. Always rejected.
