@@ -1,44 +1,54 @@
 # Ralleh Poster
 
-Create beautiful, non-slop posters for performances and events.
+An enterprise-grade OpenClaw skill for generating premium, non-slop event posters, performance flyers, and visual graphic assets.
+
+This repository enforces strict analog design principles to ensure AI-generated visual assets meet professional graphic design standards. It systematically eliminates the "default AI aesthetic" (plastic rendering, volumetric clutter, hallucinated text) through a mandatory 7-stage procedural loop.
+
+---
+
+## 🏗️ Repository Architecture
+
+This skill operates strictly on four authoritative documents. All generation must comply with this framework:
+
+1. **`STANDARDS.md`** — The binding design law. Contains anti-slop rules, visual hierarchy requirements, typography constraints, genre-specific tropes, color budgets, and composition frameworks.
+2. **`TEMPLATES.md`** — Reusable, high-end style presets (Swiss Minimalist, Vintage Screenprint, Woodcut, etc.) with copy-ready prompt blocks and aesthetic rules.
+3. **`WORKFLOW.md`** — The mandatory 7-stage procedural loop (Intake → Research → Strategy → Concepting → Critique → Refinement → Output) that governs generation.
+4. **`TOOLS.md`** — The OpenClaw integration contract, defining the required tools (`image_generate`, `image`, `web_search`) and the strict file output architecture for reproducibility.
 
 ---
 
 ## 🤖 Instructions for LLMs / AI Agents
 
-If you are an LLM or AI agent tasked with creating a new poster and were pointed to this repository (`https://github.com/ralleh-ai/ralleh-poster`), follow the prompt below to initialize a local, step-by-step task runner to generate the poster.
+If you are an LLM or AI agent tasked with creating a poster, you must initialize your execution context using the files in this repository. **Do not begin image generation immediately.**
 
-### How to use this Repository
-1. **Initialize Your Task Loop**: Read the contents of `WORKFLOW.md`, `TOOLS.md`, and `references/DESIGN_STANDARDS.md`.
-2. **Execute the Workflow**: Run through Stages 1 through 7 sequentially. Do not skip stages.
-3. **Save your Output**: Place concepts and final outputs in a dedicated directory under `output/` following the format outlined in `TOOLS.md`.
+### Bootstrap Sequence
 
----
+1. **Load Context**: Use the `read` tool to ingest `STANDARDS.md`, `TEMPLATES.md`, `WORKFLOW.md`, and `TOOLS.md`.
+2. **Acknowledge Rules**: Confirm to the requester that you have loaded the Ralleh Poster rules and understand the anti-slop constraints.
+3. **Initiate Stage 1**: Begin executing `WORKFLOW.md` at Stage 1 (Intake). Ask the requester for the mandatory event details (Title, Date, Venue, Genre) if they were not provided in the initial prompt.
+4. **Follow the Gates**: You must pass the exit gate of each stage in `WORKFLOW.md` before proceeding to the next.
 
-## 🚀 Starter Prompt for AI Agents
-Copy and paste the prompt below to initialize your run:
+### Starter Prompt for Agents
+
+*(Users can copy and paste this to start a session cleanly)*
 
 ```markdown
-You are an expert poster designer. We are going to generate a high-quality, unique, non-slop performance/event poster.
+You are an expert poster designer operating under the Ralleh Poster skill. We need to generate a high-quality, unique, non-slop performance/event poster.
 
-I want to create a new poster. I have loaded the ralleh-poster repository rules.
-
-To begin, initialize a local task/workflow loop using the following repository rules:
-1. Load and follow the 7 steps in WORKFLOW.md (Intake, Research, Design Strategy, Concept Generation, Critique, Refinement, Final Output).
-2. Adhere to the design rules in references/DESIGN_STANDARDS.md (Minimalism, physical print references, restricted palettes, and no AI slop).
-3. Set up the file structure described in TOOLS.md to store drafts, rationale, and the final output.
-
-Please acknowledge that you have read these files and start immediately with Stage 1 (Intake). Ask me for any missing details required for the Intake checklist.
+To begin:
+1. Read the authority files: STANDARDS.md, TEMPLATES.md, WORKFLOW.md, and TOOLS.md.
+2. Acknowledge that you understand the 7-stage workflow and the anti-slop rules.
+3. Start immediately with Stage 1 (Intake) and ask me for any missing event details required to proceed.
 ```
 
 ---
 
-## 📂 Directory Structure
+## 🚫 The Anti-Slop Guarantee
 
-- `SKILL.md` - OpenClaw Skill definition for agent routing.
-- `WORKFLOW.md` - Comprehensive 7-stage design process.
-- `TOOLS.md` - Standardized tool descriptions for runtime integration.
-- `references/` - Design standards and style templates.
-  - `DESIGN_STANDARDS.md` - Quality standards to prevent generic AI style tropes.
-  - `STYLE_TEMPLATES.md` - Aesthetic templates for quick visual starting points.
-- `scripts/` - Reserved for future automated generation or text overlay scripts.
+This skill is designed to prevent generic diffusion-model outputs. All outputs must pass a strict critique for:
+*   **Tactile realism**: Visible paper grain, halftone dots, or physical media textures.
+*   **Restricted palettes**: Maximum 4 named colors.
+*   **Negative space**: At least 30% of the canvas at rest.
+*   **Typographic integrity**: Either flawless short-header generation or a completely textless background plate ready for manual vector overlay. 
+
+*If a generated plate fails these checks, the agent is instructed to reject it internally and iterate before presenting it to the user.*

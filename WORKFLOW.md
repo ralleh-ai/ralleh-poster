@@ -1,89 +1,132 @@
 # Poster Generation Workflow
 
-This document details the step-by-step procedure required to generate high-quality, non-slop performance or event posters. Any LLM or agent operating in this repository must follow this sequence systematically.
+**Version**: 2.0  
+**Authority**: Execution framework for the Ralleh Poster skill.  
+**Constraint**: Any LLM or agent operating this repository must execute these seven stages sequentially. Do not skip stages. Do not begin generation until Stage 3 is complete. Every stage contains mandatory exit gates that must be satisfied before advancing.
 
-## Stage 1: Intake
-
-Before starting, establish exact context. Do not make assumptions about event details.
-* **Objective**: Gather raw metadata and constraints.
-* **Checklist**:
-  - [ ] **Event Title**: Exact capitalization, spelling, and punctuation.
-  - [ ] **Date/Time**: Correct format (e.g., Day of week, Month Day, Year, start/end time).
-  - [ ] **Venue**: Full name, address, and city (or virtual platform if applicable).
-  - [ ] **Billing / Performers**: Order of importance, secondary names, and sponsors.
-  - [ ] **Style Constraints**: Prefer minimal/handcrafted aesthetics. Note explicitly forbidden generic trends.
-  - [ ] **Technical Specs**: Intended output medium (Digital: 1080x1920 or Print: 300 DPI, standard paper sizes).
+This workflow is designed to prevent generic "AI slop" by forcing the agent to think like a professional designer: gathering context, establishing creative limits, drafting concepts, critiquing ruthlessly, and executing deliberately.
 
 ---
 
-## Stage 2: Research
+## Stage 1: Intake (Context Gathering)
 
-Investigate visual contexts corresponding to the event, performer, or setting.
-* **Objective**: Root the poster in authentic artistic reference points.
-* **Action Steps**:
-  1. Search for the performer/artist’s historical design language, previous album art, or concert posters.
-  2. Research the physical venue: its architectural style, geographic location, history, or prevailing local aesthetics.
-  3. Look for broader regional art trends connected to the genre of the performance.
-  4. Build a brief text-based "Mood Board" containing recurring colors, visual motifs, and textures.
+Do not make assumptions about event details. Gather raw metadata and establish creative constraints.
 
----
+### 1.1 Checklist
+- [ ] **Event Title**: Exact capitalization, spelling, and punctuation.
+- [ ] **Date/Time**: Correct format (e.g., Day of week, Month Day, Year, start/end time).
+- [ ] **Venue**: Full name, address, and city (or virtual platform).
+- [ ] **Billing / Performers**: Order of importance, secondary names, and sponsors.
+- [ ] **Genre / Event Type**: Categorize (e.g., Music, Theater, Market, Sports).
+- [ ] **Style Constraints**: Identify requested style (map to `TEMPLATES.md` if possible) and explicitly note forbidden tropes per `STANDARDS.md` §4.
+- [ ] **Format / Specs**: Intended output medium (Digital/Print, aspect ratio).
 
-## Stage 3: Design Strategy
-
-Synthesize research into a concise design direction before generating images.
-* **Objective**: Define the core visual metaphor.
-* **Key Decisions**:
-  - **The Metaphor**: What singular symbolic element represents the entire event? (Avoid depicting everything; choose one striking icon, abstract shape, or scene).
-  - **The Style**: Choose a layout template (e.g., Swiss Design, Vintage Concert Screenprint, Linocut, Risograph).
-  - **The Palette**: Select 3-4 specific colors (e.g., "Warm Ochre, Muted Sage, Off-White, and Midnight Black").
-  - **Typography Layout Strategy**: Plan where text will reside (top-heavy, bottom banner, wrapped around center metaphor) and how legibility will be maintained.
+### 1.2 Exit Gate
+Proceed to Stage 2 only when the Event Title, Date, Venue, and Genre are confirmed by the requester. If any are missing, ask for clarification.
 
 ---
 
-## Stage 4: Concept Generation
+## Stage 2: Research (Visual Context)
 
-Develop multiple distinct creative angles.
-* **Objective**: Present diverse possibilities before committing.
-* **Action Steps**:
-  - Draft **4 to 6 distinct visual concepts**.
-  - Each concept must include:
-    - **Visual Metaphor**: What we see.
-    - **Layout/Composition**: How elements are structured.
-    - **Prompt Concept**: Detailed description for a visual model.
-    - **Inspiration**: e.g., "Inspired by 1970s jazz festival prints."
-  - Ensure concepts are truly distinct, not just minor iterations of each other.
+Root the poster in authentic artistic reference points before drafting concepts.
 
----
+### 2.1 Action Steps
+1. Use web search or internal memory to investigate the visual history of the performer/artist or the event's genre.
+2. Investigate the physical venue or the geographic location for architectural or regional aesthetic hooks.
+3. Identify relevant art movements or analog printing traditions (e.g., 1960s Fillmore screenprints, Bauhaus, Risograph, Swiss Grid).
 
-## Stage 5: Critique
+### 2.2 Output
+Write a short, text-based "Mood Board" (3-5 bullet points) summarizing recurring colors, visual motifs, and textures that fit the event and comply with `STANDARDS.md`.
 
-Evaluate all concepts objectively against professional design criteria.
-* **Objective**: Filter out low-effort or visually cluttered designs.
-* **Scoring Rubric (1-5 for each)**:
-  1. **Visual Hierarchy**: Does the viewer's eye move logically from the Title, to the Metaphor, to the Date and Venue?
-  2. **Typography Integration**: Is there a clear, uncluttered space for readable text, or does it clash with the background art?
-  3. **Composition & Balance**: Does it make effective use of empty space (negative space)?
-  4. **Originality / Anti-Slop**: Is it free of generic glossy gradients, plastic-like lighting, over-rendered curves, and cliché AI elements?
-* **Action**: Choose the top 1 or 2 concepts for Refinement.
+### 2.3 Exit Gate
+Proceed to Stage 3 only when the Mood Board is documented in the session context.
 
 ---
 
-## Stage 6: Refinement
+## Stage 3: Design Strategy (Creative Limits)
 
-Iterate on the selected concepts.
-* **Objective**: Tighten visual details and prepare for generation.
-* **Action Steps**:
-  - Incorporate critiques from Stage 5 or explicit user feedback.
-  - Refine prompting parameters (e.g., specify camera angle, film grain, paper texture, printing technique).
-  - Test variations of the prompt to ensure predictable layout results.
+Synthesize research into a strict design direction. This is where the poster is intellectually solved before any pixels are generated.
+
+### 3.1 Key Decisions
+- **The Core Metaphor**: What singular symbolic element represents the entire event? (Choose one striking icon, abstract shape, or scene. Never depict everything.)
+- **The Style Preset**: Select the most appropriate layout template from `TEMPLATES.md` (or define a custom one that adheres strictly to `STANDARDS.md`).
+- **The Color Palette**: Select exactly 3-4 specific named colors (e.g., "Warm Ochre #C28832, Midnight Navy #142035, Off-White Cream #F5EFE0"). Consult `STANDARDS.md` §5.
+- **Typography Strategy**: Choose Method A (Textless Plate) or Method B (High-Fidelity Short Header) per `STANDARDS.md` §3.1. Decide where text will reside and how legibility will be maintained (e.g., backing panels, negative space).
+- **Format Target**: Finalize resolution/aspect ratio.
+
+### 3.2 Output
+A concise paragraph summarizing the strategy, naming the metaphor, the `TEMPLATES.md` reference, the 3-4 colors, and the typography plan.
+
+### 3.3 Exit Gate
+Proceed to Stage 4 only when the strategy paragraph is written and explicitly confirms compliance with `STANDARDS.md` color and typography rules.
 
 ---
 
-## Stage 7: Final Output
+## Stage 4: Concept Generation (Drafting)
 
-Run final execution and provide clear context.
-* **Objective**: Produce the final poster and document the design rationale.
-* **Deliverables**:
-  1. **High-Quality Poster Asset**: Delivered in the requested size/aspect ratio.
-  2. **Design Rationale**: Brief text explaining the metaphorical choices, typography plan, and color selections.
-  3. **Technical Manifest**: The exact models used, seed (if applicable), and final prompts for future reproducibility.
+Develop multiple distinct creative angles based on the approved strategy.
+
+### 4.1 Action Steps
+Draft **4 distinct visual concepts** (or user-requested number). Each concept must include:
+- **Title**: A short evocative name for the concept.
+- **Visual Metaphor**: What the plate depicts.
+- **Composition**: How elements are structured (referencing `STANDARDS.md` §6 frameworks).
+- **Prompt Concept**: The exact text description to be sent to the visual model, incorporating the relevant `TEMPLATES.md` prompt block and slop-prevention keywords.
+- **Rationale**: A one-sentence explanation of why this concept fits the event and avoids genre tropes (`STANDARDS.md` §4).
+
+### 4.2 Constraints
+Ensure concepts are truly distinct structural approaches, not minor variations of the same idea. Every concept must be designed to pass the anti-slop criteria (`STANDARDS.md` §1).
+
+### 4.3 Exit Gate
+Proceed to Stage 5 only when all 4 concepts are documented. Present the concepts to the requester for selection (unless the `--generate` flag is set, in which case proceed automatically with the top-scored concept).
+
+---
+
+## Stage 5: Critique (Objective Scoring)
+
+Evaluate the drafted concepts (or the initial generated candidates if running autonomously) against professional design criteria.
+
+### 5.1 Scoring Rubric (Pass/Fail for each)
+1. **Slop Prevention (`STANDARDS.md` §1)**: Is it free of plastic rendering, volumetric overload, cluttered noise, and hallucinated glyphs? Does it exhibit analog tactile quality?
+2. **Hierarchy (`STANDARDS.md` §2)**: Is the Hook clearly dominant? Does the eye know where to go next?
+3. **Typography (`STANDARDS.md` §3)**: Is there a clear, uncluttered zone for text integration? (Or, if Method B is used, is the header perfectly rendered?)
+4. **Color & Composition (`STANDARDS.md` §§5-6)**: Are there only 3-4 colors? Is there at least 30% negative space? Is the main visual anchored?
+
+### 5.2 Action
+Filter out any concept or generated candidate that fails *any* of the four criteria. Select the strongest passing concept.
+
+### 5.3 Exit Gate
+Proceed to Stage 6 only when a single concept has passed the critique rubric and is selected for final execution.
+
+---
+
+## Stage 6: Refinement (Generation & Iteration)
+
+Execute the selected concept and iterate until the output is flawless.
+
+### 6.1 Action Steps
+1. Execute the image generation using the prompt developed in Stage 4.
+2. Review the resulting plate using vision capabilities (or self-critique).
+3. Check against the Stage 5 rubric. If the image model introduced slop, hallucinated text, or ignored color constraints, *reject the plate*.
+4. Adjust the prompt (e.g., increase weights on anti-slop terms, simplify the metaphor, enforce "textless plate") and regenerate.
+5. Repeat until a plate passes the critique rubric completely.
+
+### 6.2 Exit Gate
+Proceed to Stage 7 only when a generated plate passes the vision-critique for slop, hierarchy, typography space, and color constraints. Never advance a flawed plate.
+
+---
+
+## Stage 7: Final Output (Delivery & Archiving)
+
+Deliver the final poster and document the design rationale.
+
+### 7.1 Deliverables
+1. **The Poster Asset**: The high-quality image file (in the requested format/resolution).
+2. **Design Rationale**: A short summary explaining the metaphorical choices, typography plan, color selections, and how it avoids slop.
+3. **Technical Manifest**: The exact provider/model used, seed (if applicable), and final generation prompt for reproducibility.
+
+### 7.2 File Storage
+Save the outputs to the project directory according to the structure defined in `TOOLS.md` §3. Ensure the event slug naming convention is followed.
+
+### 7.3 Exit Gate
+The workflow is complete when the deliverables are presented to the requester and all files are saved to the defined directory structure.
