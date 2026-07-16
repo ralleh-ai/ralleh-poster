@@ -12,6 +12,10 @@ This document defines the capabilities required, the specific tool invocations e
 
 **Role**: Generate the high-fidelity visual plate for the poster (Stage 6).
 
+### 🔑 Model Selection Rule of Thumb
+> **Method A (Textless Plate) → `fal/flux-pro`** (best for tactile analog textures and screenprint aesthetics)  
+> **Method B (Direct Text) → `ideogram/v2`** (best-in-class typography rendering; explicitly prefer this over any other option when text must be baked into the plate)
+
 ### 1.1 Direct Runtime Integration (API Mode)
 Use the `image_generate` tool. Ensure the prompt integrates the anti-slop directives from `STANDARDS.md` and the structural constraints from `TEMPLATES.md`.
 

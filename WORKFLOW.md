@@ -96,6 +96,8 @@ Evaluate the drafted concepts (or the initial generated candidates if running au
 ### 5.2 Action
 Filter out any concept or generated candidate that fails *any* of the four criteria. Select the strongest passing concept.
 
+*   **Calibration Hint**: If you are unsure whether a candidate passes the anti-slop rules, consult the reference cases in `examples/`. Compare your candidate against the failure patterns shown in `example-02` and `example-05`. If your candidate resembles the failures, reject it and refine the prompt.
+
 ### 5.3 Exit Gate
 Proceed to Stage 6 only when a single concept has passed the critique rubric and is selected for final execution.
 
