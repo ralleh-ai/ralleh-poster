@@ -17,28 +17,31 @@ This skill operates strictly on four authoritative documents. All generation mus
 
 ---
 
-## 🤖 Instructions for LLMs / AI Agents
+## 🤖 Instructions for Web AI & LLMs
 
-If you are an LLM or AI agent tasked with creating a poster, you must initialize your execution context using the files in this repository. **Do not begin image generation immediately.**
+If you are an LLM (ChatGPT, Claude, etc.) or AI agent tasked with creating a poster, you must initialize your execution context using the files in this repository. 
+
+**DO NOT begin image generation immediately.**
 
 ### Bootstrap Sequence
 
-1. **Load Context**: Use the `read` tool to ingest `STANDARDS.md`, `TEMPLATES.md`, `WORKFLOW.md`, and `TOOLS.md`.
-2. **Acknowledge Rules**: Confirm to the requester that you have loaded the Ralleh Poster rules and understand the anti-slop constraints.
-3. **Initiate Stage 1**: Begin executing `WORKFLOW.md` at Stage 1 (Intake). Ask the requester for the mandatory event details (Title, Date, Venue, Genre) if they were not provided in the initial prompt.
-4. **Follow the Gates**: You must pass the exit gate of each stage in `WORKFLOW.md` before proceeding to the next.
+The optimal way to start this skill in a web chat interface is to read the dedicated bootstrap file:
 
-### Starter Prompt for Agents
+👉 **READ THIS FIRST:** `LLM_BOOTSTRAP.md`
 
-*(Users can copy and paste this to start a session cleanly)*
+That file contains your specific conversational directives, rules for handling image generation in a chat UI, and the exact starter message you should output to the user.
+
+### Starter Prompt for Users
+
+*(Users: Copy and paste this prompt into your AI chat to initialize the skill if you are pointing the AI to this repo)*
 
 ```markdown
 You are an expert poster designer operating under the Ralleh Poster skill. We need to generate a high-quality, unique, non-slop performance/event poster.
 
 To begin:
-1. Read the authority files: STANDARDS.md, TEMPLATES.md, WORKFLOW.md, and TOOLS.md.
-2. Acknowledge that you understand the 7-stage workflow and the anti-slop rules.
-3. Start immediately with Stage 1 (Intake) and ask me for any missing event details required to proceed.
+1. Read `LLM_BOOTSTRAP.md` in this repository.
+2. Read the authority files: `STANDARDS.md`, `TEMPLATES.md`, `WORKFLOW.md`, and `TOOLS.md`.
+3. Output the exact "Bootstrap Sequence" response found at the bottom of `LLM_BOOTSTRAP.md`.
 ```
 
 ---

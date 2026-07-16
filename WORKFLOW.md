@@ -22,7 +22,7 @@ Do not make assumptions about event details. Gather raw metadata and establish c
 - [ ] **Format / Specs**: Intended output medium (Digital/Print, aspect ratio).
 
 ### 1.2 Exit Gate
-Proceed to Stage 2 only when the Event Title, Date, Venue, and Genre are confirmed by the requester. If any are missing, ask for clarification.
+Proceed to Stage 2 only when the Event Title, Date, Venue, and Genre are confirmed by the requester. **If operating in a conversational web UI, stop and ask the user for this information now. Do not proceed until they reply.**
 
 ---
 
@@ -39,7 +39,7 @@ Root the poster in authentic artistic reference points before drafting concepts.
 Write a short, text-based "Mood Board" (3-5 bullet points) summarizing recurring colors, visual motifs, and textures that fit the event and comply with `STANDARDS.md`.
 
 ### 2.3 Exit Gate
-Proceed to Stage 3 only when the Mood Board is documented in the session context.
+Proceed to Stage 3 only when the Mood Board is documented in the session context. **If in a conversational UI, present the Mood Board to the user for approval before continuing.**
 
 ---
 
@@ -58,7 +58,7 @@ Synthesize research into a strict design direction. This is where the poster is 
 A concise paragraph summarizing the strategy, naming the metaphor, the `TEMPLATES.md` reference, the 3-4 colors, and the typography plan.
 
 ### 3.3 Exit Gate
-Proceed to Stage 4 only when the strategy paragraph is written and explicitly confirms compliance with `STANDARDS.md` color and typography rules.
+Proceed to Stage 4 only when the strategy paragraph is written and explicitly confirms compliance with `STANDARDS.md` color and typography rules. **In a conversational UI, present the strategy to the user for alignment before generating concepts.**
 
 ---
 
@@ -78,7 +78,7 @@ Draft **4 distinct visual concepts** (or user-requested number). Each concept mu
 Ensure concepts are truly distinct structural approaches, not minor variations of the same idea. Every concept must be designed to pass the anti-slop criteria (`STANDARDS.md` §1).
 
 ### 4.3 Exit Gate
-Proceed to Stage 5 only when all 4 concepts are documented. Present the concepts to the requester for selection (unless the `--generate` flag is set, in which case proceed automatically with the top-scored concept).
+Proceed to Stage 5 only when all 4 concepts are documented. Present the concepts to the requester for selection. **If operating in a conversational UI, stop here. Ask the user which concept they prefer. Do not proceed to critique or generation until the user has selected a path.** (Unless an automated `--generate` flag is set).
 
 ---
 
@@ -112,7 +112,7 @@ Execute the selected concept and iterate until the output is flawless.
 5. Repeat until a plate passes the critique rubric completely.
 
 ### 6.2 Exit Gate
-Proceed to Stage 7 only when a generated plate passes the vision-critique for slop, hierarchy, typography space, and color constraints. Never advance a flawed plate.
+Proceed to Stage 7 only when a generated plate passes the vision-critique for slop, hierarchy, typography space, and color constraints. Never advance a flawed plate. *(Note: If you are a web LLM without native image generation, your exit gate is providing the final refined prompt to the user and asking them to run it).*
 
 ---
 
