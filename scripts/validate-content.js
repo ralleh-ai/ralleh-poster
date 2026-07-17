@@ -9,12 +9,13 @@ const REPORT_PATH = path.join(REPORTS_DIR, 'validation-report.json');
 const TRENDS_PATH = path.join(REPORTS_DIR, 'validation-trends.json');
 
 const requiredFiles = [
-  'SKILL.md', 'README.md', 'CORE_RULES.md', 'WORKFLOW.md', 'STANDARDS.md', 'TEMPLATES.md',
-  'TOOLS.md', 'LLM_INSTRUCTIONS.md', 'llm-reference.md', 'FULL_LLM_REFERENCE.md', 'CHANGELOG.md',
+  'SKILL.md', 'README.md', 'WORKFLOW.md', 'STANDARDS.md', 'TEMPLATES.md',
+  'TOOLS.md', 'CHANGELOG.md',
   'examples/README.md', 'examples/FEW_SHOT_TEMPLATE.md', 'docs/installation.md', 'docs/ideogram-integration.md'
 ];
 
-const requiredAuthorityFiles = ['CORE_RULES.md', 'WORKFLOW.md', 'STANDARDS.md', 'TEMPLATES.md'];
+// SKILL.md is the sole entrypoint and must reference every downstream authority file.
+const requiredAuthorityFiles = ['WORKFLOW.md', 'STANDARDS.md', 'TEMPLATES.md', 'TOOLS.md'];
 const requiredExampleSections = [
   '- Outcome:', '- Example Type:', '- Primary Stage Checkpoint:', '- Primary Rules Referenced:',
   '## 1) Event Brief', '## 2) Candidate Strategy / Prompt', '## 3) Critique Mapping',
@@ -350,19 +351,7 @@ for (const rel of requiredAuthorityFiles) {
     action: `Add ${rel} to SKILL.md authority order.`,
     priority: 'medium'
   });
-  assertIncludes('LLM_INSTRUCTIONS.md', rel, `LLM_INSTRUCTIONS.md missing authority reference: ${rel}`, {
-    file: 'LLM_INSTRUCTIONS.md',
-    issue: `missing authority reference ${rel}`,
-    action: `Include ${rel} in LLM start sequence and authority order.`,
-    priority: 'medium'
-  });
 }
-assertIncludes('llm-reference.md', 'CORE_RULES.md', 'llm-reference.md missing CORE_RULES.md pointer', {
-  file: 'llm-reference.md',
-  issue: 'missing core rules pointer',
-  action: 'Add CORE_RULES.md pointer in compact reference.',
-  priority: 'medium'
-});
 assertIncludes('examples/README.md', 'FEW_SHOT_TEMPLATE.md', 'examples/README.md missing FEW_SHOT_TEMPLATE.md reference', {
   file: 'examples/README.md',
   issue: 'missing template reference',

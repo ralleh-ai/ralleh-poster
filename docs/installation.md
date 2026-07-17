@@ -108,7 +108,7 @@ An executive or marketing agent can spawn a specialized child sub-agent to handl
 If a non-owner agent needs to leverage the skill without spawning a sub-agent, it can reference the skill directives in a system prompt:
 
 ```markdown
-When generating any poster or event visual, you MUST first read and follow the entire framework at `/opt/skills/ralleh-poster/`, starting with `LLM_BOOTSTRAP.md`. Do not use your default image-generation prompt style; the Ralleh Poster anti-slop rules override your defaults for poster tasks.
+When generating any poster or event visual, you MUST first read and follow the entire framework at `/opt/skills/ralleh-poster/`, starting with `SKILL.md`. Do not use your default image-generation prompt style; the Ralleh Poster anti-slop rules override your defaults for poster tasks.
 ```
 
 Once complete, the invoked agent saves the finalized outputs to `output/` per `TOOLS.md` §3, and returns the design rationale and local file path to the parent session.

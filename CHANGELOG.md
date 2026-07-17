@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.0.0 - 2026-07-17
+**Breaking: single-entrypoint refactor (Carmack pass).**
+- Removed 5 redundant files: `CORE_RULES.md`, `LLM_INSTRUCTIONS.md`, `LLM_BOOTSTRAP.md`, `FULL_LLM_REFERENCE.md`, `llm-reference.md`. Every one duplicated the authority chain and hard-constraint list already owned by `SKILL.md` and `STANDARDS.md`.
+- `SKILL.md` is now the sole LLM/OpenClaw entrypoint. It owns: operational contract, canonical non-negotiables (with `STANDARDS.md` refs, no duplicated rule text), per-stage output contract, failure contract, tool contract, Web-UI bootstrap block, success criteria.
+- `STANDARDS.md` remains the single source of truth for design law. Non-negotiables in `SKILL.md` reference it by section instead of restating it.
+- Updated `README.md` authority chain and starter prompt.
+- Updated `docs/installation.md` to point web LLMs at `SKILL.md`.
+- Validator (`scripts/validate-content.js`): removed deleted files from `requiredFiles`, updated `requiredAuthorityFiles` to `[WORKFLOW, STANDARDS, TEMPLATES, TOOLS]`, dropped assertions for deleted files.
+- Net: -5 files, ~-230 lines of duplication, one path to the law, zero contradictions possible.
+
 ## 2.16.0 - 2026-07-17
 - Phase 16 stage-coverage lock policy enforcement completed.
 - Added strict stage coverage lock in validator policy (`stageCoverageLock`) requiring Stage 1..7 representation.

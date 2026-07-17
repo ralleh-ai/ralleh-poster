@@ -12,23 +12,17 @@ This repository is optimized for two outcomes:
 1. LLM context training for high-quality poster generation
 2. OpenClaw-native skill execution
 
-### Authority chain (required read order)
-1. **`CORE_RULES.md`** — Non-negotiable behavior rules and output contract
-2. **`WORKFLOW.md`** — Mandatory 7-stage execution loop
-3. **`STANDARDS.md`** — Binding design standards and anti-slop constraints
-4. **`TEMPLATES.md`** — Reusable style templates and prompt scaffolds
-5. **`examples/`** — Few-shot success/failure calibration
+### Authority chain (single source of truth, read in this order)
+1. **`SKILL.md`** — Single entrypoint. Operational contract, non-negotiables, tool contract, Web-UI bootstrap.
+2. **`WORKFLOW.md`** — Mandatory 7-stage execution loop and exit gates.
+3. **`STANDARDS.md`** — Binding design law (slop, hierarchy, typography, genre, color, composition).
+4. **`TEMPLATES.md`** — Reusable style templates and prompt scaffolds.
+5. **`TOOLS.md`** — Tool contract, fallbacks, output file architecture.
+6. **`examples/`** — Few-shot success/failure calibration.
 
-### LLM bootstrap assets
-- `LLM_INSTRUCTIONS.md` — canonical system prompt and runtime behavior
-- `llm-reference.md` — compact reference for short context windows
-- `FULL_LLM_REFERENCE.md` — single-file expanded context
-- `LLM_BOOTSTRAP.md` — conversational startup behavior
-
-### OpenClaw integration docs
-- `SKILL.md` — OpenClaw skill entrypoint
-- `TOOLS.md` — tool contract, fallbacks, output architecture
-- `docs/installation.md` — current install and config guidance
+### Human docs
+- `docs/installation.md` — OpenClaw install and config guidance.
+- `docs/ideogram-integration.md` — Ideogram/Method-B integration notes.
 
 ---
 
@@ -104,30 +98,26 @@ If you are an LLM (ChatGPT, Claude, etc.) or AI agent tasked with creating a pos
 
 ### Bootstrap Sequence
 
-For LLM execution, start with:
+For any LLM execution (OpenClaw or web chat), start with:
 
-1. `LLM_INSTRUCTIONS.md`
-2. `CORE_RULES.md`
-3. `WORKFLOW.md`
-4. `STANDARDS.md`
-5. `TEMPLATES.md`
-6. `examples/README.md` + at least one success and one failure example
-
-Use `llm-reference.md` when context budget is tight.
-Use `FULL_LLM_REFERENCE.md` when you can load more context.
+1. `SKILL.md` — operational contract and Web-UI bootstrap block.
+2. `WORKFLOW.md` — the 7 stages.
+3. `STANDARDS.md` — the design law.
+4. `TEMPLATES.md` — style scaffolds.
+5. `examples/README.md` + at least one success example and `example-02-failure-slop.md`.
 
 ### Starter Prompt for Users
 
-*(Users: Copy and paste this prompt into your AI chat to initialize the skill if you are pointing the AI to this repo)*
+*(Copy and paste this prompt into your AI chat if you are pointing the LLM at this repo.)*
 
 ```markdown
-You are an expert poster designer operating under the Ralleh Poster skill. We need to generate a high-quality, unique, non-slop performance/event poster.
+You are an expert poster designer operating under the Ralleh Poster skill. We need to generate a high-quality, unique, non-slop event poster.
 
 To begin:
-1. Read `LLM_INSTRUCTIONS.md` in this repository.
-2. Read authority files in order: `CORE_RULES.md`, `WORKFLOW.md`, `STANDARDS.md`, `TEMPLATES.md`.
+1. Read `SKILL.md` in this repository and follow its authority chain.
+2. Read `WORKFLOW.md`, `STANDARDS.md`, `TEMPLATES.md`.
 3. Read `examples/README.md` and one success + one failure example.
-4. Then begin Stage 1 intake.
+4. Then send the Stage 1 intake message defined in `SKILL.md` §7.
 ```
 
 ---
