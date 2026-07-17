@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.5.0 - 2026-07-17
+- Phase 5 quality scoring and reporting completed.
+- Upgraded validator to weighted quality scoring:
+  - per-example score (0–100)
+  - overall corpus score threshold
+  - warn/fail tier outputs
+- Added machine-readable report output at `reports/validation-report.json`.
+- Updated GitHub Actions workflow to upload validation report artifact.
+- Added `npm run validate:report` for local inspection.
+
 ## 2.4.0 - 2026-07-17
 - Phase 4 semantic quality enforcement completed.
 - Expanded `scripts/validate-content.js` with semantic gates:

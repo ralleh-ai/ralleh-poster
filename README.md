@@ -45,12 +45,21 @@ CI enforcement:
 - Runs on push to `main` and on pull requests
 - Fails the build when schema/content checks fail
 
-Phase 4 semantic enforcement now validates:
+Phase 4+5 semantic enforcement now validates:
 - minimum standards reference coverage across examples
 - anti-slop keyword density in prompt blocks
 - critique-table depth per example
 - metadata consistency between Example Type and Outcome
 - explicit typography method declaration (Method A or Method B)
+- weighted per-example quality scoring (0–100)
+- overall corpus score threshold
+- machine-readable report artifact at `reports/validation-report.json`
+
+View local report:
+
+```bash
+npm run validate:report
+```
 
 ## ⚙️ Installation & Usage
 
