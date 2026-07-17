@@ -26,14 +26,30 @@ const antiSlopKeywords = [
   'zero glow', 'zero gradients', 'no photorealism', 'no 3d', 'negative space', 'zero neon'
 ];
 
+const exampleTypeThresholds = {
+  positive: { fail: 80, warn: 88 },
+  negative: { fail: 72, warn: 82 }
+};
+
+const stageBudgets = {
+  default: { fail: { refs: 3, critiqueRows: 3, keywordHits: 2 }, warn: { refs: 4, critiqueRows: 3, keywordHits: 3 } },
+  'Stage 5': { fail: { refs: 3, critiqueRows: 3, keywordHits: 2 }, warn: { refs: 4, critiqueRows: 4, keywordHits: 4 } },
+  'Stage 6': { fail: { refs: 3, critiqueRows: 3, keywordHits: 2 }, warn: { refs: 4, critiqueRows: 4, keywordHits: 4 } },
+  'Stage 7': { fail: { refs: 3, critiqueRows: 3, keywordHits: 2 }, warn: { refs: 4, critiqueRows: 4, keywordHits: 4 } }
+};
+
 const report = {
   generatedAt: new Date().toISOString(),
-  version: '2.6.0',
+  version: '2.7.0',
   status: 'pass',
   errors: [],
   warnings: [],
   remediation: [],
   summary: {},
+  policies: {
+    exampleTypeThresholds,
+    stageBudgets
+  },
   examples: []
 };
 
@@ -69,6 +85,26 @@ function extractMetaLine(txt, key) {
   return m ? m[1].trim() : '';
 }
 
+function normalizeExampleType(raw) {
+  if (!raw) return null;
+  const t = raw.toLowerCase();
+  if (t.includes('positive')) return 'positive';
+  if (t.includes('negative')) return 'negative';
+  return null;
+}
+
+function extractStageNumber(raw) {
+  if (!raw) return null;
+  const m = raw.match(/Stage\s*(\d+)/i);
+  if (!m) return null;
+  return Number(m[1]);
+}
+
+function stageKey(stageNum) {
+  if (!stageNum) return 'default';
+  return `Stage ${stageNum}`;
+}
+
 function getPromptBlocks(txt) {
   return [...txt.matchAll(/```text([\s\S]*?)```/g)].map((m) => m[1].toLowerCase());
 }
@@ -83,6 +119,7 @@ function countCritiqueRows(txt) {
 function scoreExample({ hasAllSections, refsCount, keywordHits, critiqueRows, metadataConsistent, hasMethod }) {
   let score = 0;
   score += hasAllSections ? 25 : 0;
+
   if (refsCount >= 5) score += 20;
   else if (refsCount >= 4) score += 16;
   else if (refsCount >= 3) score += 12;
@@ -115,6 +152,26 @@ function getPriorTrend() {
     return JSON.parse(fs.readFileSync(TRENDS_PATH, 'utf8'));
   } catch {
     return null;
+  }
+}
+
+function checkBudget(rel, stageName, metricName, value, failMin, warnMin, remediationHint) {
+  if (value < failMin) {
+    addError(`${rel} ${stageName} budget fail: ${metricName}=${value} (<${failMin})`, {
+      file: rel,
+      issue: `${stageName} budget fail: ${metricName}`,
+      action: remediationHint,
+      priority: 'high'
+    });
+    return;
+  }
+  if (value < warnMin) {
+    addWarning(`${rel} ${stageName} budget warning: ${metricName}=${value} (<${warnMin})`, {
+      file: rel,
+      issue: `${stageName} budget warning: ${metricName}`,
+      action: remediationHint,
+      priority: 'medium'
+    });
   }
 }
 
@@ -227,7 +284,7 @@ assertIncludes('WORKFLOW.md', 'litellm/ideogram-v4', 'WORKFLOW.md missing canoni
   priority: 'high'
 });
 
-// Example validation + weighted scoring
+// Example validation + weighted scoring + type/stage budgets
 const examplesDir = path.join(ROOT, 'examples');
 const exampleFiles = fs.readdirSync(examplesDir).filter((f) => /^example-\d{2}-.*\.md$/.test(f)).sort();
 if (exampleFiles.length < 6) {
@@ -240,17 +297,17 @@ if (exampleFiles.length < 6) {
 }
 
 const distinctRuleRefs = new Set();
+const stageSet = new Set();
 let totalScore = 0;
+
 for (const name of exampleFiles) {
   const rel = path.join('examples', name);
   const txt = read(rel);
-  const issues = { errors: [], warnings: [] };
 
   let hasAllSections = true;
   for (const section of requiredExampleSections) {
     if (!txt.includes(section)) {
       hasAllSections = false;
-      issues.errors.push(`missing required section: ${section}`);
       addError(`${rel} missing required section: ${section}`, {
         file: rel,
         issue: `missing section ${section}`,
@@ -261,17 +318,40 @@ for (const name of exampleFiles) {
   }
 
   const outcome = extractMetaLine(txt, 'Outcome');
-  const type = extractMetaLine(txt, 'Example Type');
+  const typeRaw = extractMetaLine(txt, 'Example Type');
+  const type = normalizeExampleType(typeRaw);
+  const stageRaw = extractMetaLine(txt, 'Primary Stage Checkpoint');
+  const stageNum = extractStageNumber(stageRaw);
+  const stageName = stageNum ? `Stage ${stageNum}` : 'Stage (unknown)';
   const rules = extractMetaLine(txt, 'Primary Rules Referenced');
 
   if (!outcome) addError(`${rel} missing Outcome metadata`, { file: rel, issue: 'missing outcome metadata', action: 'Add - Outcome: Success|Failure ...', priority: 'high' });
-  if (!type) addError(`${rel} missing Example Type metadata`, { file: rel, issue: 'missing type metadata', action: 'Add - Example Type: Positive|Negative', priority: 'high' });
+  if (!typeRaw) addError(`${rel} missing Example Type metadata`, { file: rel, issue: 'missing type metadata', action: 'Add - Example Type: Positive|Negative', priority: 'high' });
+  if (!type) addError(`${rel} has invalid Example Type value: ${typeRaw || '(empty)'}`, { file: rel, issue: 'invalid example type', action: 'Use Example Type: Positive or Negative.', priority: 'high' });
+
+  if (!stageRaw) {
+    addError(`${rel} missing Primary Stage Checkpoint metadata`, {
+      file: rel,
+      issue: 'missing stage checkpoint metadata',
+      action: 'Add Primary Stage Checkpoint in format: Stage X',
+      priority: 'high'
+    });
+  }
+  if (stageRaw && (!stageNum || stageNum < 1 || stageNum > 7)) {
+    addError(`${rel} has invalid Primary Stage Checkpoint: ${stageRaw}`, {
+      file: rel,
+      issue: 'invalid stage checkpoint value',
+      action: 'Use Primary Stage Checkpoint in format Stage 1 ... Stage 7.',
+      priority: 'high'
+    });
+  }
+  if (stageNum) stageSet.add(stageName);
+
   if (!rules) addError(`${rel} missing Primary Rules Referenced metadata`, { file: rel, issue: 'missing rules metadata', action: 'Add - Primary Rules Referenced with § references.', priority: 'high' });
 
   const refs = rules.match(/§\d+\.\d+/g) || [];
   refs.forEach((r) => distinctRuleRefs.add(r));
   if (refs.length < 3) {
-    issues.errors.push('must reference at least 3 standards sections');
     addError(`${rel} must reference at least 3 standards sections`, {
       file: rel,
       issue: 'low standards reference density',
@@ -279,7 +359,6 @@ for (const name of exampleFiles) {
       priority: 'high'
     });
   } else if (refs.length < 4) {
-    issues.warnings.push('low standards reference density (<4)');
     addWarning(`${rel} warning: low standards reference density (<4)`, {
       file: rel,
       issue: 'standards coverage could be stronger',
@@ -288,8 +367,8 @@ for (const name of exampleFiles) {
     });
   }
 
-  const positiveMismatch = /positive/i.test(type) && !/success/i.test(outcome);
-  const negativeMismatch = /negative/i.test(type) && !/failure/i.test(outcome);
+  const positiveMismatch = /positive/i.test(typeRaw) && !/success/i.test(outcome);
+  const negativeMismatch = /negative/i.test(typeRaw) && !/failure/i.test(outcome);
   const metadataConsistent = !positiveMismatch && !negativeMismatch;
 
   if (positiveMismatch) addError(`${rel} has Example Type Positive but Outcome is not Success`, {
@@ -357,7 +436,7 @@ for (const name of exampleFiles) {
     });
   }
 
-  if (/negative/i.test(type) && !/fail/i.test(txt.toLowerCase())) {
+  if (/negative/i.test(typeRaw) && !/fail/i.test(txt.toLowerCase())) {
     addError(`${rel} is Negative but does not explicitly show failure detection`, {
       file: rel,
       issue: 'negative case lacks failure signal',
@@ -365,6 +444,15 @@ for (const name of exampleFiles) {
       priority: 'high'
     });
   }
+
+  // Stage-level quality budget enforcement
+  const budget = stageBudgets[stageName] || stageBudgets.default;
+  checkBudget(rel, stageName, 'standardsRefs', refs.length, budget.fail.refs, budget.warn.refs,
+    `Increase standards references in ${rel} to meet ${stageName} budget (fail>=${budget.fail.refs}, warn>=${budget.warn.refs}).`);
+  checkBudget(rel, stageName, 'critiqueRows', critiqueRows, budget.fail.critiqueRows, budget.warn.critiqueRows,
+    `Increase critique mapping depth in ${rel} to meet ${stageName} budget (fail>=${budget.fail.critiqueRows}, warn>=${budget.warn.critiqueRows}).`);
+  checkBudget(rel, stageName, 'antiSlopKeywordHits', bestKeywordHits, budget.fail.keywordHits, budget.warn.keywordHits,
+    `Increase anti-slop keyword density in ${rel} to meet ${stageName} budget (fail>=${budget.fail.keywordHits}, warn>=${budget.warn.keywordHits}).`);
 
   const score = scoreExample({ hasAllSections, refsCount: refs.length, keywordHits: bestKeywordHits, critiqueRows, metadataConsistent, hasMethod });
   totalScore += score;
@@ -385,10 +473,42 @@ for (const name of exampleFiles) {
     });
   }
 
+  // Example-type threshold enforcement
+  if (type && exampleTypeThresholds[type]) {
+    const t = exampleTypeThresholds[type];
+    if (score < t.fail) {
+      addError(`${rel} ${type} threshold fail: score ${score} < ${t.fail}`, {
+        file: rel,
+        issue: `${type} threshold fail`,
+        action: `Raise ${type} example quality score to at least ${t.fail}.`,
+        priority: 'high'
+      });
+    } else if (score < t.warn) {
+      addWarning(`${rel} ${type} threshold warning: score ${score} < ${t.warn}`, {
+        file: rel,
+        issue: `${type} threshold warning`,
+        action: `Improve ${type} example quality score toward ${t.warn}+ for target quality budget.`,
+        priority: 'medium'
+      });
+    }
+  }
+
   report.examples.push({
     file: rel,
     score,
-    metrics: { standardsRefs: refs.length, antiSlopKeywordHits: bestKeywordHits, critiqueRows, hasMethod, metadataConsistent }
+    type,
+    stage: stageName,
+    thresholds: {
+      type: type ? exampleTypeThresholds[type] : null,
+      stage: budget
+    },
+    metrics: {
+      standardsRefs: refs.length,
+      antiSlopKeywordHits: bestKeywordHits,
+      critiqueRows,
+      hasMethod,
+      metadataConsistent
+    }
   });
 }
 
@@ -404,6 +524,15 @@ if (distinctRuleRefs.size < 8) {
     file: 'examples/',
     issue: 'corpus standards coverage moderate',
     action: 'Expand examples to reference 10+ distinct standards sections.',
+    priority: 'medium'
+  });
+}
+
+if (stageSet.size < 2) {
+  addWarning(`Stage checkpoint diversity low: only ${stageSet.size} unique stage(s) represented`, {
+    file: 'examples/',
+    issue: 'low stage checkpoint diversity',
+    action: 'Add examples anchored to additional stage checkpoints for broader training coverage.',
     priority: 'medium'
   });
 }
@@ -476,21 +605,19 @@ if (trends.history.length > 50) trends.history = trends.history.slice(-50);
 
 const priorPoint = trends.history.length >= 2 ? trends.history[trends.history.length - 2] : null;
 const delta = priorPoint ? overallScore - priorPoint.overallScore : null;
-
-if (delta !== null) {
-  if (delta < 0) {
-    addWarning(`Quality score regressed by ${Math.abs(delta)} point(s) from previous run`, {
-      file: 'reports/validation-trends.json',
-      issue: 'quality regression',
-      action: 'Review low-scoring examples and recent edits to recover prior score.',
-      priority: 'medium'
-    });
-  }
+if (delta !== null && delta < 0) {
+  addWarning(`Quality score regressed by ${Math.abs(delta)} point(s) from previous run`, {
+    file: 'reports/validation-trends.json',
+    issue: 'quality regression',
+    action: 'Review low-scoring examples and recent edits to recover prior score.',
+    priority: 'medium'
+  });
 }
 
 report.summary = {
   examples: exampleFiles.length,
   distinctStandardsRefs: distinctRuleRefs.size,
+  representedStages: Array.from(stageSet).sort(),
   overallScore,
   errors: report.errors.length,
   warnings: report.warnings.length,

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.7.0 - 2026-07-17
+- Phase 7 threshold/budget enforcement completed.
+- Added per-example-type quality thresholds (Positive and Negative) with warn/fail enforcement.
+- Added stage-level quality budget enforcement based on `Primary Stage Checkpoint` metadata.
+- Added stage parsing/validation (Stage 1..7 format) and stage diversity signal in summary.
+- Extended report payload with `policies` and per-example threshold context.
+
 ## 2.6.0 - 2026-07-17
 - Phase 6 remediation + trend tracking completed.
 - Added actionable remediation guidance in validation report (`remediation[]` with file/issue/action/priority).
