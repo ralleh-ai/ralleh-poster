@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.14.0 - 2026-07-17
+- Phase 14 draft promotion workflow completed.
+- Added `scripts/promote-stage-stub.js` for safe promotion of draft stage stubs into scored examples.
+- Added npm script `stage-stubs:promote`.
+- Promotion features:
+  - selector by `--stage` or `--draft`
+  - canonical filename auto-numbering (`example-XX-<success|failure>-<theme>.md`)
+  - `examples/README.md` index auto-update
+  - preflight validation gate with rollback on failure
+  - draft cleanup + draft manifest update on success
+  - guardrail blocks score/warning regressions unless `--allow-regression` is provided
+- Added `--dry-run` support for no-write promotion preview.
+
 ## 2.13.0 - 2026-07-17
 - Phase 13 draft stub materialization completed.
 - Added `scripts/materialize-stage-stubs.js` to auto-create missing-stage draft files from `stageExpansionPlan`.

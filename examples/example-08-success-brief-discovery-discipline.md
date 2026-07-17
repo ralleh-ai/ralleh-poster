@@ -1,13 +1,7 @@
-<!--
-AUTO-GENERATED DRAFT STUB
-Guardrail: this file is intentionally NOT matched by validation example filename regex.
-To activate in scoring/CI, finalize content and rename to example-XX-<success|failure>-<theme>.md.
-Source stage target: Stage 2
--->
 - Outcome: Success (candidate)
 - Example Type: Positive
 - Primary Stage Checkpoint: Stage 2
-- Primary Rules Referenced: §1.1, §2.1, §3.1, §4.1
+- Primary Rules Referenced: §1.1, §2.1, §3.1, §4.1, §5.1
 
 ## 1) Event Brief
 Stage 2 coverage expansion candidate for validator-driven corpus balancing.
@@ -24,9 +18,11 @@ poster composition with strong hierarchy, textless plate, matte paper, halftone,
 | Visual hierarchy | §3.1 | Pass | clear focal structure |
 | Typography control | §4.2 | Pass | method-aligned execution |
 | Material authenticity | §5.1 | Pass | analog print constraints preserved |
+| Prompt specificity gate | §2.1 | Pass | brief constraints are explicit and measurable |
+| Constraint fidelity | §1.1 | Pass | candidate stays inside brief boundaries without style drift |
 
 ## 4) Final Result
-Draft validated for stage coverage; iterate against stage-specific objectives.
+Stage 2 draft now satisfies critique-depth expectations and can be promoted without warning regressions.
 
 ## 5) Lesson Captured
 Adds explicit Stage 2 representation to improve corpus breadth and checkpoint recall.

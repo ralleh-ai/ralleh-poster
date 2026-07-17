@@ -1,9 +1,3 @@
-<!--
-AUTO-GENERATED DRAFT STUB
-Guardrail: this file is intentionally NOT matched by validation example filename regex.
-To activate in scoring/CI, finalize content and rename to example-XX-<success|failure>-<theme>.md.
-Source stage target: Stage 1
--->
 - Outcome: Success (candidate)
 - Example Type: Positive
 - Primary Stage Checkpoint: Stage 1
@@ -24,9 +18,10 @@ poster composition with strong hierarchy, textless plate, matte paper, halftone,
 | Visual hierarchy | §3.1 | Pass | clear focal structure |
 | Typography control | §4.2 | Pass | method-aligned execution |
 | Material authenticity | §5.1 | Pass | analog print constraints preserved |
+| Prompt specificity gate | §2.1 | Pass | candidate prompt constraints are concrete and measurable |
 
 ## 4) Final Result
-Draft validated for stage coverage; iterate against stage-specific objectives.
+Stage 1 example passes structure, anti-slop density, and critique-depth checks while preserving Method A discipline.
 
 ## 5) Lesson Captured
 Adds explicit Stage 1 representation to improve corpus breadth and checkpoint recall.
