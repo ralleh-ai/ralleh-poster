@@ -67,13 +67,15 @@ npm run validate:trends
 npm run validate:publish
 ```
 
-Phase 9–12 reporting artifacts:
+Phase 9–13 reporting + expansion artifacts:
 - `reports/validation-summary.md` (human-friendly markdown summary)
 - `reports/quality-badges.json` (badge metadata for automation)
 - `reports/validation-trends.json` includes commit-range diff metadata and regression hints
 - `reports/validation-report.json` includes:
   - `improvementPlan` with expected-impact prioritized next steps
   - `stageExpansionPlan` with missing-stage targets and template-ready stubs
+- `scripts/materialize-stage-stubs.js` can auto-materialize stage coverage drafts into `examples/drafts/`
+  - guardrail: drafts are not scored until promoted to canonical `example-XX-*` names
 - CI appends summary to GitHub job summary and uploads all report artifacts
 
 ## ⚙️ Installation & Usage

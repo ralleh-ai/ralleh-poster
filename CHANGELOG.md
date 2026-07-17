@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.13.0 - 2026-07-17
+- Phase 13 draft stub materialization completed.
+- Added `scripts/materialize-stage-stubs.js` to auto-create missing-stage draft files from `stageExpansionPlan`.
+- Added npm script `stage-stubs:materialize` (runs validation then generates draft stubs).
+- Draft stubs are written to `examples/drafts/` with guardrails:
+  - draft filename pattern intentionally excluded from strict scoring regex
+  - clear preamble explains promotion path to canonical `example-XX-*` files
+- Added draft manifest output: `examples/drafts/_manifest.json`.
+
 ## 2.12.0 - 2026-07-17
 - Phase 12 stage-coverage expansion planning completed.
 - `validation-report.json` now includes `stageExpansionPlan` with:

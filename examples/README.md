@@ -31,3 +31,8 @@ All examples should follow `examples/FEW_SHOT_TEMPLATE.md` and include:
 2. Name file as `example-XX-<success|failure>-<theme>.md`.
 3. Fill all required sections.
 4. Link the new file in this README.
+
+## Draft Stub Workflow (Phase 13)
+- Run `npm run stage-stubs:materialize` to auto-create missing-stage draft stubs in `examples/drafts/`.
+- Draft files are intentionally named `draft-stage-XX-coverage.md` so they are **not** included in strict example scoring until finalized.
+- To activate a draft for CI scoring, refine content and rename to canonical pattern `example-XX-<success|failure>-<theme>.md`.
