@@ -1,11 +1,7 @@
 {
-  "generatedAt": "2026-07-17T17:32:18.952Z",
+  "generatedAt": "2026-07-17T17:34:11.001Z",
   "sourceReport": "reports/validation-report.json",
-  "count": 1,
-  "draftFiles": [
-    "examples/drafts/draft-stage-07-coverage.md"
-  ],
-  "stages": [
-    "Stage 7"
-  ]
+  "count": 0,
+  "draftFiles": [],
+  "stages": []
 }

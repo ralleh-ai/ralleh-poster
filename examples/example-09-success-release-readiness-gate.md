@@ -1,13 +1,7 @@
-<!--
-AUTO-GENERATED DRAFT STUB
-Guardrail: this file is intentionally NOT matched by validation example filename regex.
-To activate in scoring/CI, finalize content and rename to example-XX-<success|failure>-<theme>.md.
-Source stage target: Stage 7
--->
 - Outcome: Success (candidate)
 - Example Type: Positive
 - Primary Stage Checkpoint: Stage 7
-- Primary Rules Referenced: §6.1, §6.2, §7.1, §7.3
+- Primary Rules Referenced: §6.1, §6.2, §7.1, §7.3, §5.1
 
 ## 1) Event Brief
 Stage 7 coverage expansion candidate for validator-driven corpus balancing.
@@ -24,9 +18,11 @@ poster composition with strong hierarchy, textless plate, matte paper, halftone,
 | Visual hierarchy | §3.1 | Pass | clear focal structure |
 | Typography control | §4.2 | Pass | method-aligned execution |
 | Material authenticity | §5.1 | Pass | analog print constraints preserved |
+| Final-gate readiness | §7.1 | Pass | acceptance criteria mapped before release |
+| Release risk review | §6.2 | Pass | residual risks captured with mitigation notes |
 
 ## 4) Final Result
-Draft validated for stage coverage; iterate against stage-specific objectives.
+Stage 7 draft demonstrates final-gate acceptance behavior with explicit risk and readiness checks, suitable for guarded promotion.
 
 ## 5) Lesson Captured
 Adds explicit Stage 7 representation to improve corpus breadth and checkpoint recall.

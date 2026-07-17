@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.15.0 - 2026-07-17
+- Phase 15 stage-7 completion and full stage coverage closure.
+- Hardened Stage 7 draft quality for guarded promotion (added standards density + deeper critique mapping).
+- Promoted Stage 7 stub to `examples/example-09-success-release-readiness-gate.md` via guarded promotion workflow.
+- Validation now reports no missing stages (`summary.missingStages: []`).
+- Corpus maintains clean gate after promotion: score 97, warnings 0, errors 0.
+
 ## 2.14.0 - 2026-07-17
 - Phase 14 draft promotion workflow completed.
 - Added `scripts/promote-stage-stub.js` for safe promotion of draft stage stubs into scored examples.

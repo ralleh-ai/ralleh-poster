@@ -28,6 +28,7 @@ All examples should follow `examples/FEW_SHOT_TEMPLATE.md` and include:
 - `example-06-success-theater-conceptual.md`
 - `example-07-success-early-brief-discipline.md`
 - `example-08-success-brief-discovery-discipline.md`
+- `example-09-success-release-readiness-gate.md`
 ## Adding New Examples
 1. Copy `examples/FEW_SHOT_TEMPLATE.md`.
 2. Name file as `example-XX-<success|failure>-<theme>.md`.
