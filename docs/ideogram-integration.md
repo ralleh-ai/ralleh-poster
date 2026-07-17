@@ -2,7 +2,7 @@
 
 OpenClaw does not currently ship with a native `ideogram` provider plugin out of the box. However, because OpenClaw integrates natively with **LiteLLM**, we can easily route Ideogram image generation requests through your existing LiteLLM proxy.
 
-This allows the `image_generate` tool to call `litellm/ideogram-v2` seamlessly.
+This allows the `image_generate` tool to call `litellm/ideogram-v4` seamlessly.
 
 ---
 
@@ -13,9 +13,9 @@ Edit your LiteLLM configuration file (typically `/opt/ralleh/litellm/litellm_con
 Add the Ideogram model to your `model_list`:
 
 ```yaml
-  - model_name: ideogram-v2
+  - model_name: ideogram-v4
     litellm_params:
-      model: ideogram/V-2
+      model: ideogram/V-4
       api_key: os.environ/IDEOGRAM_API_KEY
 ```
 *(Check LiteLLM documentation for the exact Ideogram model string if V-2a or V-2-turbo is preferred).*
@@ -35,7 +35,7 @@ sudo systemctl restart litellm
 
 ## 3. Configure OpenClaw Agent Routing
 
-Now that LiteLLM is exposing `ideogram-v2` as an OpenAI-compatible endpoint, update your OpenClaw agent configuration to prioritize it for poster typography.
+Now that LiteLLM is exposing `ideogram-v4` as an OpenAI-compatible endpoint, update your OpenClaw agent configuration to prioritize it for poster typography.
 
 Edit `~/.openclaw/openclaw.json` (or `/etc/openclaw/gateway.json`):
 
@@ -45,7 +45,7 @@ Edit `~/.openclaw/openclaw.json` (or `/etc/openclaw/gateway.json`):
     "ralleh-poster": {
       "model_routing": {
         "textless_plates": "fal/flux-pro",
-        "text_integrated": "litellm/ideogram-v2"
+        "text_integrated": "litellm/ideogram-v4"
       }
     }
   }
@@ -57,5 +57,5 @@ Edit `~/.openclaw/openclaw.json` (or `/etc/openclaw/gateway.json`):
 Invoke the image generation tool manually through the chat to verify the pipeline:
 
 ```text
-/tool image_generate action="generate" model="litellm/ideogram-v2" prompt="A simple test poster with the word 'HELLO' in bold sans-serif font on a white background."
+/tool image_generate action="generate" model="litellm/ideogram-v4" prompt="A simple test poster with the word 'HELLO' in bold sans-serif font on a white background."
 ```

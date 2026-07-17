@@ -32,7 +32,7 @@ The agent corrected the approach by explicitly routing to a typography-capable m
 
 *   **Metaphor**: A single, clean intersecting glassmorphic plane.
 *   **Style**: Modern Abstract Conceptual.
-*   **Typography Strategy**: Method B (Direct Text), explicitly utilizing `ideogram/v2`.
+*   **Typography Strategy**: Method B (Direct Text), explicitly utilizing `litellm/ideogram-v4`.
 *   **Correction**: We will prompt for *only* the main header ("Future of AI in Design"), and force the text to sit in the clean sandstone-colored negative space, not overlapping the complex shapes.
 
 ## 5. Corrected Prompt
@@ -44,10 +44,10 @@ A contemporary abstract conceptual art poster plate. The top half is clean, soli
 | Rule | Compliance |
 |---|---|
 | §1.1 Slop indicators | ✅ Zero hallucinated glyphs, crisp text. |
-| §3.1 Typography | ✅ Method B executed flawlessly using Ideogram v2. Text is perfectly spelled. |
+| §3.1 Typography | ✅ Method B executed flawlessly using Ideogram v4. Text is perfectly spelled. |
 | §3.3 Legibility | ✅ Text sits on a solid, high-contrast sandstone background. Zero overlap with busy shapes. |
 
 ## 7. Lesson Captured
 When using Method B (Direct Text):
-1. **Model matters**: You must use a model optimized for text (like `ideogram/v2`).
+1. **Model matters**: You must use a model optimized for text (like `litellm/ideogram-v4`).
 2. **Placement matters**: You must explicitly prompt the model to place text in a clean, solid-colored zone. If text overlays complex geometry, it will fail legibility constraints.

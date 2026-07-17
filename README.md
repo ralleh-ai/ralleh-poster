@@ -8,16 +8,27 @@ This repository enforces strict analog design principles to ensure AI-generated 
 
 ## 🏗️ Repository Architecture
 
-This skill operates strictly on authoritative documents and reference examples. All generation must comply with this framework:
+This repository is optimized for two outcomes:
+1. LLM context training for high-quality poster generation
+2. OpenClaw-native skill execution
 
-1. **`STANDARDS.md`** — The binding design law. Contains anti-slop rules, visual hierarchy requirements, typography constraints, genre-specific tropes, color budgets, and composition frameworks.
-2. **`TEMPLATES.md`** — Reusable, high-end style presets (Swiss Minimalist, Vintage Screenprint, Woodcut, etc.) with copy-ready prompt blocks and aesthetic rules.
-3. **`WORKFLOW.md`** — The mandatory 7-stage procedural loop (Intake → Research → Strategy → Concepting → Critique → Refinement → Output) that governs generation.
-4. **`TOOLS.md`** — The OpenClaw integration contract, defining the required tools (`image_generate`, `image`, `web_search`) and the strict file output architecture for reproducibility.
+### Authority chain (required read order)
+1. **`CORE_RULES.md`** — Non-negotiable behavior rules and output contract
+2. **`WORKFLOW.md`** — Mandatory 7-stage execution loop
+3. **`STANDARDS.md`** — Binding design standards and anti-slop constraints
+4. **`TEMPLATES.md`** — Reusable style templates and prompt scaffolds
+5. **`examples/`** — Few-shot success/failure calibration
 
-**Directories:**
-*   `examples/` — Few-shot calibration material including success/failure cases and end-to-end runs to tune AI evaluation criteria.
-*   `docs/` — Usage, installation, and deployment reference guides for OpenClaw gateway configuration.
+### LLM bootstrap assets
+- `LLM_INSTRUCTIONS.md` — canonical system prompt and runtime behavior
+- `llm-reference.md` — compact reference for short context windows
+- `FULL_LLM_REFERENCE.md` — single-file expanded context
+- `LLM_BOOTSTRAP.md` — conversational startup behavior
+
+### OpenClaw integration docs
+- `SKILL.md` — OpenClaw skill entrypoint
+- `TOOLS.md` — tool contract, fallbacks, output architecture
+- `docs/installation.md` — current install and config guidance
 
 ---
 
@@ -41,11 +52,17 @@ If you are an LLM (ChatGPT, Claude, etc.) or AI agent tasked with creating a pos
 
 ### Bootstrap Sequence
 
-The optimal way to start this skill in a web chat interface is to read the dedicated bootstrap file:
+For LLM execution, start with:
 
-👉 **READ THIS FIRST:** `LLM_BOOTSTRAP.md`
+1. `LLM_INSTRUCTIONS.md`
+2. `CORE_RULES.md`
+3. `WORKFLOW.md`
+4. `STANDARDS.md`
+5. `TEMPLATES.md`
+6. `examples/README.md` + at least one success and one failure example
 
-That file contains your specific conversational directives, rules for handling image generation in a chat UI, and the exact starter message you should output to the user.
+Use `llm-reference.md` when context budget is tight.
+Use `FULL_LLM_REFERENCE.md` when you can load more context.
 
 ### Starter Prompt for Users
 
@@ -55,9 +72,10 @@ That file contains your specific conversational directives, rules for handling i
 You are an expert poster designer operating under the Ralleh Poster skill. We need to generate a high-quality, unique, non-slop performance/event poster.
 
 To begin:
-1. Read `LLM_BOOTSTRAP.md` in this repository.
-2. Read the authority files: `STANDARDS.md`, `TEMPLATES.md`, `WORKFLOW.md`, and `TOOLS.md`.
-3. Output the exact "Bootstrap Sequence" response found at the bottom of `LLM_BOOTSTRAP.md`.
+1. Read `LLM_INSTRUCTIONS.md` in this repository.
+2. Read authority files in order: `CORE_RULES.md`, `WORKFLOW.md`, `STANDARDS.md`, `TEMPLATES.md`.
+3. Read `examples/README.md` and one success + one failure example.
+4. Then begin Stage 1 intake.
 ```
 
 ---

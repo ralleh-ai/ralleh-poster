@@ -108,7 +108,7 @@ Proceed to Stage 6 only when a single concept has passed the critique rubric and
 Execute the selected concept and iterate until the output is flawless.
 
 ### 6.1 Action Steps
-1. **Model Selection**: If the strategy uses Method B (Direct Text), explicitly route the request to a typography-capable model (prefer `ideogram/v2`). If Method A (Textless), use a high-fidelity texture model (prefer `flux-pro`).
+1. **Model Selection**: If the strategy uses Method B (Direct Text), explicitly route the request to a typography-capable model (prefer `litellm/ideogram-v4` or equivalent runtime alias). If Method A (Textless), use a high-fidelity texture model (prefer `fal/flux-pro`).
 2. Execute the image generation using the prompt developed in Stage 4.
 3. Review the resulting plate using vision capabilities (or self-critique).
 4. Check against the Stage 5 rubric. If the image model introduced slop, hallucinated text, or ignored color constraints, *reject the plate*.

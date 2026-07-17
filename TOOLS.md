@@ -14,7 +14,7 @@ This document defines the capabilities required, the specific tool invocations e
 
 ### 🔑 Model Selection Rule of Thumb
 > **Method A (Textless Plate) → `fal/flux-pro`** (best for tactile analog textures and screenprint aesthetics)  
-> **Method B (Direct Text) → `ideogram/v2`** (best-in-class typography rendering; explicitly prefer this over any other option when text must be baked into the plate)
+> **Method B (Direct Text) → `litellm/ideogram-v4`** (best-in-class typography rendering; explicitly prefer this over any other option when text must be baked into the plate)
 
 ### 1.1 Direct Runtime Integration (API Mode)
 Use the `image_generate` tool. Ensure the prompt integrates the anti-slop directives from `STANDARDS.md` and the structural constraints from `TEMPLATES.md`.
@@ -22,20 +22,23 @@ Use the `image_generate` tool. Ensure the prompt integrates the anti-slop direct
 *   **Action**: `"generate"`
 *   **Model**: Override default if a specific professional model is requested. 
     *   *For Textless Plates (Method A)*: `fal/flux-pro`, `fal/flux-1.1-pro` for highest fidelity analog emulation and texture.
-    *   *For Text-Integrated Plates (Method B)*: Strongly prefer `ideogram/v2` (or the latest Ideogram version available), or fallback to `openai/dall-e-3`. Ideogram is explicitly optimized for typographic coherence.
+    *   *For Text-Integrated Plates (Method B)*: Strongly prefer `litellm/ideogram-v4` (or the latest Ideogram version available), or fallback to `openai/dall-e-3`. Ideogram is explicitly optimized for typographic coherence.
 *   **Output Format**: `png` or `webp` for highest quality lossless/near-lossless output. Avoid heavy jpeg compression artifacts that compromise analog film grain or print textures.
 *   **Size**: Explicitly define size per `STANDARDS.md` §6.5 (e.g., `1080x1920` for digital portrait, or a high-res equivalent for print). Use `size` or `aspectRatio` parameters as supported by the provider.
 
 ### 1.2 Web AI Chat Integration (Conversational Mode)
-If you are operating in a standard web-chat interface (such as Claude, ChatGPT, Gemini, etc.) and have **native image generation capabilities (e.g., DALL-E 3, Imagen 3, or similar)**, execute the generation directly using your internal tool. 
+If you are operating in a standard web-chat interface (such as Claude, ChatGPT, Gemini, etc.) and have **native image generation capabilities**, execute generation directly.
 
-If you do **not have direct image-generation capabilities**, your role is to provide the final optimized prompt to the user as a clear copy-pasteable code block:
-1.  Add a note explaining which model it was optimized for (e.g., "Optimized for FLUX.1 [dev]" or "Optimized for Midjourney v6").
-2.  Provide a clear one-line copy-paste button wrapper.
-3.  Instruct the user on how to run it and ask them to upload the result once generated so you can perform the Stage 5/6 Critique step.
+If you do **not have direct image-generation capabilities**, provide the final optimized prompt as a copy-paste block and ask the user to upload the result for critique.
 
-**Mandatory Prompt Practice (All Environments)**:
-The prompt used must be the refined, final prompt resulting from `WORKFLOW.md` Stage 6, explicitly incorporating color restrictions and tactile keywords.
+**Fallback Decision Tree (Generation):**
+1. If Method A is selected and `fal/flux-pro` is available → generate with `fal/flux-pro`.
+2. If Method B is selected and `litellm/ideogram-v4` is available → generate with `litellm/ideogram-v4`.
+3. If Method B model is unavailable → fall back to Method A and produce textless plate unless requester explicitly requires baked-in type.
+4. If no generation tool is available → return refined prompt + rationale + expected settings and request user-run generation.
+
+**Mandatory Prompt Practice (All Environments):**
+The prompt used must be the refined output from `WORKFLOW.md` Stage 6, including explicit palette and anti-slop constraints.
 
 ---
 
@@ -47,7 +50,12 @@ The prompt used must be the refined, final prompt resulting from `WORKFLOW.md` S
 Use the `image` tool (vision analysis) to inspect the generated asset before presenting it to the user.
 
 ### 2.2 Web AI Chat Integration (Conversational Mode)
-If you are in a web chat interface, **request the user upload the generated image file** so that your internal vision capability can inspect it. Once uploaded, run your visual critique against the `STANDARDS.md` criteria.
+If you are in a web chat interface, request the user upload the generated image so internal vision can inspect it.
+
+**Fallback Decision Tree (Critique):**
+1. If `image` vision is available → run full Stage 5 critique.
+2. If no vision tool is available → run explicit checklist self-critique and mark confidence limits.
+3. If confidence is low without vision validation → require a user upload or regenerate with stricter constraints before approval.
 
 ### 2.3 Critique Prompt Requirements (All Environments)
 When analyzing a draft, the critique step must explicitly verify:
@@ -68,9 +76,10 @@ If the visual critique identifies failures on these points, the plate must be re
 Use the `exec`, `write`, or `edit` tools to create directories and save files in the working directory under `output/<event-slug>/` as specified in §3.3.
 
 ### 3.2 Web AI Chat Integration (Conversational Mode)
-If you do not have write access to the user's filesystem:
-1.  Output the **Design Rationale** and the **Technical Manifest** as clear, copy-pasteable markdown blocks in the chat.
-2.  Provide instructions for the user to save these locally alongside their final image asset for future reference.
+If you do not have write access:
+1. Output **Design Rationale** and **Technical Manifest** in copy-pasteable markdown.
+2. Provide save instructions for user-side archiving.
+3. Do not claim local persistence when write access is unavailable.
 
 ### 3.3 Standardized Directory Structure (API Mode)
 ```text

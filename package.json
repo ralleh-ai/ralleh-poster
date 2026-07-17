@@ -1,0 +1,9 @@
+{
+  "name": "ralleh-poster",
+  "private": true,
+  "version": "2.2.0",
+  "description": "LLM training and OpenClaw skill framework for premium poster generation",
+  "scripts": {
+    "validate": "node scripts/validate-content.js"
+  }
+}

@@ -1,6 +1,6 @@
 # Installation & Usage in OpenClaw
 
-This guide describes how to configure, load, and run the `ralleh-poster` skill in your local or server-side OpenClaw gateway environment.
+This guide describes how to configure, load, and run the `ralleh-poster` skill in a current OpenClaw environment.
 
 ---
 
@@ -15,42 +15,35 @@ Before installing this skill, ensure your OpenClaw runtime meets the following:
 
 ## 2. Skill Integration
 
-OpenClaw discovers skills dynamically from the filesystem. To load this skill, ensure the directory containing `SKILL.md` is exposed to your agent's skill discovery path.
+OpenClaw loads skills from standard roots (workspace/user managed paths). Recommended approach: install the skill into the active workspace using native CLI.
 
-### Step 1: Clone the Repository
-Clone the repository to a stable path on your gateway host:
+### Step 1: Install into workspace
 ```bash
-git clone https://github.com/ralleh-ai/ralleh-poster.git /opt/skills/ralleh-poster
+openclaw skills install git:ralleh-ai/ralleh-poster
 ```
 
-### Step 2: Register the Skill Path
-Update your OpenClaw gateway configuration (usually `~/.openclaw/openclaw.json` on user installs or `/etc/openclaw/gateway.json` on server installs) so that the skills discovery mechanism includes the new path:
+### Step 2: Verify loading
+```bash
+openclaw skills list | grep ralleh-poster
+openclaw skills check
+```
+
+### Step 3: If using custom directories
+Use `skills.load.extraDirs` in `~/.openclaw/openclaw.json`:
 
 ```json
 {
   "skills": {
-    "paths": [
-      "/opt/skills/ralleh-poster"
-    ]
+    "load": {
+      "extraDirs": ["/opt/skills"]
+    }
   }
 }
 ```
 
-### Step 3: Reload the Gateway
-Reload the OpenClaw gateway to apply changes:
+Then restart gateway or open a new session:
 ```bash
 openclaw gateway restart
-```
-
-### Step 4: Verify Loading
-Confirm the skill loaded successfully:
-```bash
-openclaw skills list | grep ralleh-poster
-```
-
-If the skill does not appear, check the gateway logs for a load error:
-```bash
-openclaw gateway logs --tail
 ```
 
 ---
@@ -60,27 +53,22 @@ openclaw gateway logs --tail
 For premium output quality, configure the designated agent (e.g., `ralleh` or a specialized creative sub-agent) with a tool profile and model mapping optimized for visual composition and vision feedback.
 
 ### Key Configuration Overrides
-Modify your agent block in `openclaw.json` to include the following overrides:
+Use agent allowlists and image model defaults in `openclaw.json`:
+
 ```json
 {
   "agents": {
-    "ralleh-poster": {
-      "model": "litellm/premium",
-      "default_model": "litellm/default",
-      "tool_profile": "creative",
-      "capabilities": [
-        "image_generate",
-        "image",
-        "web_search",
-        "web_fetch",
-        "read",
-        "write",
-        "edit",
-        "exec"
-      ],
-      "model_routing": {
-        "textless_plates": "fal/flux-pro",
-        "text_integrated": "ideogram/v2"
+    "defaults": {
+      "skills": ["ralleh-poster"],
+      "imageGenerationModel": {
+        "primary": "fal/flux-pro"
+      }
+    }
+  },
+  "skills": {
+    "entries": {
+      "ralleh-poster": {
+        "enabled": true
       }
     }
   }
@@ -88,8 +76,8 @@ Modify your agent block in `openclaw.json` to include the following overrides:
 ```
 
 **Notes:**
-*   `tool_profile: "creative"` unlocks image generation and vision tools by default.
-*   `model_routing` is a suggested extension: use it to hint to the agent when to switch between FLUX and Ideogram based on Stage 6 requirements.
+- Keep `image_generate`, `image`, `web_search`, `web_fetch`, `read`, `write`, and `edit` available in the runtime tool profile.
+- Prefer textless plate flows on `fal/flux-pro`; use `litellm/ideogram-v4` when Method B is required.
 
 ---
 
@@ -131,7 +119,7 @@ Once complete, the invoked agent saves the finalized outputs to `output/` per `T
 
 | Issue | Fix |
 |---|---|
-| Skill not appearing in `openclaw skills list` | Confirm the `skills.paths` array includes the parent directory of the skill and restart the gateway. |
-| Agent doesn't use FLUX/Ideogram routing | Ensure the agent's model routing keys are set and API keys are configured under provider settings. |
-| Image generation fails | Confirm the `image_generate` tool is in the agent's `capabilities` array and provider secrets exist. |
-| Vision critique step blocked | Ensure `image` (vision analysis) capability is enabled in your agent's tool profile. |
+| Skill not appearing in `openclaw skills list` | Run `openclaw skills check`; verify install location and agent allowlists. |
+| Skill present but not visible to this agent | Check `agents.defaults.skills` / `agents.list[].skills` configuration. |
+| Image generation fails | Verify provider auth and `agents.defaults.imageGenerationModel` settings. |
+| Vision critique step blocked | Ensure the `image` tool is available in runtime and not restricted by profile. |

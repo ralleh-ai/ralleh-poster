@@ -1,42 +1,47 @@
 # Example 06: Theater Conceptual — "Macbeth"
 
-**Status**: ✅ Approved. Passes all `STANDARDS.md` criteria.
+- Outcome: Success
+- Example Type: Positive
+- Primary Stage Checkpoint: Stage 5
+- Primary Rules Referenced: §1.1, §2.1, §3.1, §4.2, §5.2, §6.2
 
-## 1. Event Brief
-*   **Title**: Macbeth
-*   **Date/Time**: October 12 – 30, 2026
-*   **Venue**: The Royal Garrison Theatre
-*   **Genre**: Theater / Performing Arts
-*   **Style Preference**: Woodcut / Linocut (Physical Relief Print)
+## 1) Event Brief
+- Title: Macbeth
+- Date/Time: October 12–30, 2026
+- Venue: The Royal Garrison Theatre
+- Genre: Theater / Performing Arts
+- Style Preference: Woodcut / Linocut
 
-## 2. Design Strategy (Stage 3 Output)
-Theater posters often fall into literal traps (swords, crowns, blood spatters). This strategy subverts those tropes by using a conceptual, non-literal metaphor rendered in a brutal, tactile style suitable for a tragedy.
+## 2) Candidate Strategy / Prompt
+**Strategy summary:**
+- Metaphor: twisted thorns forming a hollow crown
+- Style: Woodcut / Linocut
+- Palette: Charcoal `#111111`, Sandstone `#E8E5DF`, Dried Blood Red `#8B2620`
+- Typography: Method A textless plate with lower-third clean zone
 
-*   **Metaphor**: A dark, dense thicket of twisted thorns intertwining to subtly form the shape of a hollow crown. 
-*   **Style**: Bold Woodcut / Linocut (Relief Print).
-*   **Palette**: Charcoal Black `#111111`, Sandstone White `#E8E5DF`, and a single accent of Dried Blood Red `#8B2620`.
-*   **Typography Strategy**: Method A (Textless Plate). The heavy woodcut aesthetic is too complex for an image model to cleanly integrate text. Type will be placed post-generation in the lower third.
-
-## 3. Final Prompt Used (Stage 6)
+**Prompt used:**
 ```text
 A bold woodblock print poster plate, traditional relief linocut style. Thick physical ink textures, visible chiseled wood carving marks, and heavy textured paper embossing. The visual shows a dense thicket of twisted thorns intertwining to subtly form the shape of a hollow crown, carved in strong positive and negative space. High-contrast duotone style using deep charcoal black ink on natural sandstone white mulberry paper, with a single heavy ink stain of dried blood red in the center. The bottom third is uncarved sandstone white negative space. Raw, tactile, organic, no digital lines, no photorealism, no 3D elements, textless plate.
 ```
 
-## 4. Design Rationale
-The relief print style instantly communicates gravity and historical weight without feeling like digital art. By asking the model to form the crown out of thorns (a conceptual leap rather than a literal drawing of a gold crown), the poster becomes an art piece. The color palette is ruthlessly restricted to three colors, achieving the required duotone-plus-accent harmony.
+## 3) Critique Mapping
+| Check | Reference | Result |
+|---|---|---|
+| Slop avoidance | `STANDARDS.md` §1.1 | Pass |
+| Hierarchy dominance | `STANDARDS.md` §2.1 | Pass |
+| Typography method | `STANDARDS.md` §3.1 | Pass (Method A) |
+| Theater trope avoidance | `STANDARDS.md` §4.2 | Pass |
+| Color harmony | `STANDARDS.md` §5.2 | Pass |
+| Negative space | `STANDARDS.md` §6.2 | Pass |
 
-## 5. `STANDARDS.md` Compliance Mapping
-| Rule | Compliance |
-|---|---|
-| §1.1 Slop indicators | ✅ Zero photorealism, zero CGI. Looks physically carved. |
-| §2.1 Hierarchy | ✅ The twisted crown commands 60% of visual attention (Hook). |
-| §3.1 Typography | ✅ Method A (Textless) prevents the complex woodgrain from distorting text. |
-| §4.2 Genre tropes | ✅ Avoids literal stage curtains, tragedy masks, and standard shiny swords. |
-| §5.2 Color Harmony | ✅ High-contrast duotone with one deep, thematic accent color. |
-| §6.2 Negative space | ✅ The uncarved bottom third provides rest space and future text housing. |
+## 4) Final Result
+Success: Approved, textless plate packaged for post-layout typography.
 
-## 6. Technical Manifest
-*   **Model**: `fal/flux-pro` (exceptional at capturing the physical chisel marks and paper embossing)
-*   **Size**: `2480 x 3508 px` (A4 Print)
-*   **Seed**: `33910`
-*   **Final Output**: Textless plate delivered for vector overlay.
+## 5) Lesson Captured
+Conceptual metaphor outperforms literal prop imagery for theater: stronger mood, less cliché, cleaner hierarchy.
+
+## 6) Technical Manifest
+- Model: `fal/flux-pro`
+- Size: `2480x3508`
+- Seed: `33910`
+- Output format: `png`
