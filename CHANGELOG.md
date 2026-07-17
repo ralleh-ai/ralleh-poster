@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.10.0 - 2026-07-17
+- Phase 10 commit-range diffing and regression hinting completed.
+- `validate-content` now computes trend delta against previous distinct commit head (not same-commit reruns).
+- `validation-trends.json` now stores:
+  - per-run commit range diff metadata
+  - changed file counts
+  - regression hint entries with likely culprit files
+- `publish-validation-summary` now includes:
+  - changed-files metric since previous distinct commit
+  - regression culprit hint section (when regressions occur)
+  - trend rows with per-run delta display.
+
 ## 2.9.0 - 2026-07-17
 - Phase 9 CI summary/badge publishing completed.
 - Added `scripts/publish-validation-summary.js` to generate:

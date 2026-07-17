@@ -40,7 +40,7 @@ const stageBudgets = {
 
 const report = {
   generatedAt: new Date().toISOString(),
-  version: '2.7.0',
+  version: '2.10.0',
   status: 'pass',
   errors: [],
   warnings: [],
@@ -153,6 +153,28 @@ function getPriorTrend() {
   } catch {
     return null;
   }
+}
+
+function getChangedFilesBetween(baseHead, currentHead) {
+  if (!baseHead || !currentHead || baseHead === currentHead) return [];
+  try {
+    const out = execSync(`git diff --name-only ${baseHead}..${currentHead}`, {
+      cwd: ROOT,
+      stdio: ['ignore', 'pipe', 'ignore']
+    }).toString().trim();
+    if (!out) return [];
+    return out.split('\n').map((s) => s.trim()).filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
+function findPreviousDistinctPoint(history, currentHead) {
+  if (!Array.isArray(history) || history.length === 0) return null;
+  for (let i = history.length - 1; i >= 0; i--) {
+    if (history[i].gitHead && history[i].gitHead !== currentHead) return history[i];
+  }
+  return null;
 }
 
 function checkBudget(rel, stageName, metricName, value, failMin, warnMin, remediationHint) {
@@ -585,7 +607,7 @@ if (overallScore < 75) {
   });
 }
 
-// Trend tracking
+// Trend tracking + commit-range diff hints
 const previous = getPriorTrend();
 const head = getGitHead();
 const trendPoint = {
@@ -598,21 +620,54 @@ const trendPoint = {
   distinctStandardsRefs: distinctRuleRefs.size
 };
 
-let trends = { history: [] };
+let trends = { history: [], regressionHints: [] };
 if (previous && Array.isArray(previous.history)) trends = previous;
-trends.history.push(trendPoint);
-if (trends.history.length > 50) trends.history = trends.history.slice(-50);
+if (!Array.isArray(trends.regressionHints)) trends.regressionHints = [];
 
-const priorPoint = trends.history.length >= 2 ? trends.history[trends.history.length - 2] : null;
-const delta = priorPoint ? overallScore - priorPoint.overallScore : null;
+const previousDistinct = findPreviousDistinctPoint(trends.history, head);
+const delta = previousDistinct ? overallScore - previousDistinct.overallScore : null;
+const changedFiles = previousDistinct ? getChangedFilesBetween(previousDistinct.gitHead, head) : [];
+
 if (delta !== null && delta < 0) {
-  addWarning(`Quality score regressed by ${Math.abs(delta)} point(s) from previous run`, {
+  addWarning(`Quality score regressed by ${Math.abs(delta)} point(s) from previous distinct commit`, {
     file: 'reports/validation-trends.json',
     issue: 'quality regression',
-    action: 'Review low-scoring examples and recent edits to recover prior score.',
+    action: 'Review changed files and low-scoring examples to recover prior score.',
     priority: 'medium'
   });
+
+  const likelyCulprits = [];
+  const lowExamples = [...report.examples].sort((a, b) => a.score - b.score).slice(0, 3).map((e) => e.file);
+  for (const f of changedFiles) {
+    if (f.startsWith('examples/') || f.startsWith('scripts/') || f === 'README.md' || f.startsWith('docs/')) {
+      likelyCulprits.push(f);
+    }
+  }
+
+  trends.regressionHints.push({
+    generatedAt: report.generatedAt,
+    fromHead: previousDistinct.gitHead,
+    toHead: head,
+    delta,
+    changedFiles,
+    likelyCulprits: Array.from(new Set(likelyCulprits)).slice(0, 10),
+    lowestScoringExamples: lowExamples
+  });
+
+  if (trends.regressionHints.length > 30) {
+    trends.regressionHints = trends.regressionHints.slice(-30);
+  }
 }
+
+trendPoint.diffFromPreviousDistinct = {
+  fromHead: previousDistinct?.gitHead || null,
+  toHead: head,
+  delta,
+  changedFilesCount: changedFiles.length
+};
+
+trends.history.push(trendPoint);
+if (trends.history.length > 50) trends.history = trends.history.slice(-50);
 
 report.summary = {
   examples: exampleFiles.length,
@@ -621,7 +676,9 @@ report.summary = {
   overallScore,
   errors: report.errors.length,
   warnings: report.warnings.length,
-  trendDeltaFromPrevious: delta
+  trendDeltaFromPrevious: delta,
+  previousDistinctHead: previousDistinct?.gitHead || null,
+  changedFilesSincePreviousDistinct: changedFiles.length
 };
 
 report.remediation = Array.from(remediationMap.values())
@@ -641,7 +698,8 @@ if (report.errors.length > 0) {
 console.log(`✅ Validation passed (score: ${overallScore}/100, warnings: ${report.warnings.length})`);
 if (delta !== null) {
   const sign = delta > 0 ? '+' : '';
-  console.log(`Trend delta from previous run: ${sign}${delta}`);
+  console.log(`Trend delta from previous distinct commit: ${sign}${delta}`);
+  console.log(`Changed files since previous distinct commit: ${changedFiles.length}`);
 }
 console.log(`Report: ${path.relative(ROOT, REPORT_PATH)}`);
 console.log(`Trends: ${path.relative(ROOT, TRENDS_PATH)}`);

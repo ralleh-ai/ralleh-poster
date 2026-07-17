@@ -94,6 +94,10 @@ const topWeakExamples = [...(report.examples || [])]
   .sort((a, b) => a.score - b.score)
   .slice(0, 3);
 
+const latestRegressionHint = Array.isArray(trends.regressionHints) && trends.regressionHints.length > 0
+  ? trends.regressionHints[trends.regressionHints.length - 1]
+  : null;
+
 const lines = [];
 lines.push('# Validation Summary');
 lines.push('');
@@ -102,6 +106,7 @@ lines.push(`- **Overall Score:** ${score} (${scoreGrade(score)})`);
 lines.push(`- **Errors:** ${errors}`);
 lines.push(`- **Warnings:** ${warnings}`);
 lines.push(`- **Trend Delta:** ${delta == null ? 'n/a' : `${delta > 0 ? '+' : ''}${delta}`}`);
+lines.push(`- **Changed Files Since Previous Distinct Commit:** ${summary.changedFilesSincePreviousDistinct ?? 'n/a'}`);
 lines.push(`- **Examples:** ${summary.examples ?? 0}`);
 lines.push(`- **Distinct Standards Refs:** ${summary.distinctStandardsRefs ?? 0}`);
 lines.push(`- **Represented Stages:** ${(summary.representedStages || []).join(', ') || 'n/a'}`);
@@ -137,12 +142,25 @@ if (topRemediation.length === 0) {
 }
 lines.push('');
 
+if (latestRegressionHint) {
+  lines.push('## Regression Culprit Hints');
+  lines.push('');
+  lines.push(`- **Delta:** ${latestRegressionHint.delta}`);
+  lines.push(`- **Range:** ${latestRegressionHint.fromHead} .. ${latestRegressionHint.toHead}`);
+  lines.push(`- **Changed Files:** ${latestRegressionHint.changedFiles.length}`);
+  lines.push(`- **Likely Culprits:** ${(latestRegressionHint.likelyCulprits || []).join(', ') || 'n/a'}`);
+  lines.push(`- **Lowest-Scoring Examples:** ${(latestRegressionHint.lowestScoringExamples || []).join(', ') || 'n/a'}`);
+  lines.push('');
+}
+
 if (Array.isArray(trends.history)) {
   const tail = trends.history.slice(-5);
   lines.push('## Recent Score Trend (last 5 runs)');
   lines.push('');
   tail.forEach((t, i) => {
-    lines.push(`${i + 1}. ${t.generatedAt} — score ${t.overallScore}, warnings ${t.warnings}, errors ${t.errors}`);
+    const d = t.diffFromPreviousDistinct?.delta;
+    const deltaText = d == null ? 'n/a' : `${d > 0 ? '+' : ''}${d}`;
+    lines.push(`${i + 1}. ${t.generatedAt} — score ${t.overallScore}, warnings ${t.warnings}, errors ${t.errors}, Δ ${deltaText}`);
   });
   lines.push('');
 }
