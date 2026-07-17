@@ -64,7 +64,13 @@ View local reports:
 ```bash
 npm run validate:report
 npm run validate:trends
+npm run validate:publish
 ```
+
+Phase 9 reporting artifacts:
+- `reports/validation-summary.md` (human-friendly markdown summary)
+- `reports/quality-badges.json` (badge metadata for automation)
+- CI appends summary to GitHub job summary and uploads all report artifacts
 
 ## ⚙️ Installation & Usage
 

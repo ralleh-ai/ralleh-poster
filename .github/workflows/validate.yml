@@ -17,8 +17,17 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Run validation
-        run: npm run validate
+      - name: Run validation + publish summary
+        run: npm run validate:publish
+
+      - name: Add validation summary to job summary
+        if: always()
+        run: |
+          if [ -f reports/validation-summary.md ]; then
+            cat reports/validation-summary.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Validation summary not generated." >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Upload validation report artifacts
         if: always()
@@ -28,4 +37,6 @@ jobs:
           path: |
             reports/validation-report.json
             reports/validation-trends.json
+            reports/validation-summary.md
+            reports/quality-badges.json
           if-no-files-found: warn

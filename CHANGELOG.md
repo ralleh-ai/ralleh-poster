@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.9.0 - 2026-07-17
+- Phase 9 CI summary/badge publishing completed.
+- Added `scripts/publish-validation-summary.js` to generate:
+  - `reports/validation-summary.md`
+  - `reports/quality-badges.json`
+- Added npm scripts:
+  - `validate:publish`
+  - `validate:all`
+- Updated CI workflow to:
+  - run validation + summary publishing
+  - append summary markdown to GitHub job summary
+  - upload expanded report artifacts
+
 ## 2.8.0 - 2026-07-17
 - Phase 8 stage-distribution balancing and warning reduction completed.
 - Rebalanced stage checkpoint distribution across examples (now includes Stage 3/4/5/6 representation).
