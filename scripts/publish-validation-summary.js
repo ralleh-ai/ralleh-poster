@@ -94,6 +94,7 @@ const topWeakExamples = [...(report.examples || [])]
   .sort((a, b) => a.score - b.score)
   .slice(0, 3);
 const topImprovementPlan = (report.improvementPlan || []).slice(0, 5);
+const topStageExpansionPlan = (report.stageExpansionPlan || []).slice(0, 5);
 
 const latestRegressionHint = Array.isArray(trends.regressionHints) && trends.regressionHints.length > 0
   ? trends.regressionHints[trends.regressionHints.length - 1]
@@ -111,6 +112,7 @@ lines.push(`- **Changed Files Since Previous Distinct Commit:** ${summary.change
 lines.push(`- **Examples:** ${summary.examples ?? 0}`);
 lines.push(`- **Distinct Standards Refs:** ${summary.distinctStandardsRefs ?? 0}`);
 lines.push(`- **Represented Stages:** ${(summary.representedStages || []).join(', ') || 'n/a'}`);
+lines.push(`- **Missing Stages:** ${(summary.missingStages || []).join(', ') || 'none'}`);
 lines.push('');
 
 lines.push('## Quality Badges');
@@ -151,6 +153,19 @@ if (topImprovementPlan.length === 0) {
   topImprovementPlan.forEach((p, i) => {
     lines.push((i + 1) + '. `' + p.file + '` (stage: ' + p.stage + ', type: ' + (p.type || 'n/a') + ') — current ' + p.currentScore + ', target ' + p.targetScore + ', expected impact +~' + p.estimatedImpactPoints);
     (p.actions || []).slice(0, 3).forEach((a) => lines.push('   - ' + a));
+  });
+}
+lines.push('');
+
+lines.push('## Stage Coverage Expansion Targets');
+lines.push('');
+if (topStageExpansionPlan.length === 0) {
+  lines.push('- none');
+} else {
+  topStageExpansionPlan.forEach((s, i) => {
+    lines.push((i + 1) + '. **' + s.stage + '** [' + s.priority + '] — ' + s.rationale);
+    lines.push('   - Suggested example type: ' + (s.suggestedExampleType || 'positive'));
+    lines.push('   - Suggested path: `' + s.suggestedPath + '`');
   });
 }
 lines.push('');

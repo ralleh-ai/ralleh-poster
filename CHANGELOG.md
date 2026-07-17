@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.12.0 - 2026-07-17
+- Phase 12 stage-coverage expansion planning completed.
+- `validation-report.json` now includes `stageExpansionPlan` with:
+  - missing stage checkpoints
+  - priority/rationale per target
+  - suggested example path and type
+  - template-ready markdown stub for each target stage
+- `summary.missingStages` added for quick coverage visibility.
+- `publish-validation-summary` now includes a "Stage Coverage Expansion Targets" section.
+- Validator CLI output now surfaces top stage expansion target.
+
 ## 2.11.0 - 2026-07-17
 - Phase 11 stage-targeted next-best-improvement prioritization completed.
 - `validation-report.json` now includes `improvementPlan` ranked by expected score impact.

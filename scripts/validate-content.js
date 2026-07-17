@@ -21,6 +21,8 @@ const requiredExampleSections = [
   '## 4) Final Result', '## 5) Lesson Captured', '## 6) Technical Manifest'
 ];
 
+const targetStages = [1, 2, 3, 4, 5, 6, 7];
+
 const antiSlopKeywords = [
   'textless plate', 'zero digital rendering', 'zero plastic', 'matte paper', 'halftone', 'ink bleed',
   'zero glow', 'zero gradients', 'no photorealism', 'no 3d', 'negative space', 'zero neon'
@@ -40,16 +42,18 @@ const stageBudgets = {
 
 const report = {
   generatedAt: new Date().toISOString(),
-  version: '2.11.0',
+  version: '2.12.0',
   status: 'pass',
   errors: [],
   warnings: [],
   remediation: [],
   improvementPlan: [],
+  stageExpansionPlan: [],
   summary: {},
   policies: {
     exampleTypeThresholds,
-    stageBudgets
+    stageBudgets,
+    targetStages
   },
   examples: []
 };
@@ -172,6 +176,65 @@ function buildImprovementCandidate({ rel, type, stageName, score, budget, refsCo
     gaps,
     actions
   };
+}
+
+function buildStageStub(stage) {
+  const method = stage >= 6 ? 'Method B (litellm/ideogram-v4)' : 'Method A (fal/flux-pro)';
+  const refs = stage <= 2 ? '§1.1, §2.1, §3.1, §4.1' : stage >= 7 ? '§6.1, §6.2, §7.1, §7.3' : '§3.1, §4.2, §5.1, §5.3';
+  return [
+    `- Outcome: Success (candidate)` ,
+    '- Example Type: Positive',
+    `- Primary Stage Checkpoint: Stage ${stage}`,
+    `- Primary Rules Referenced: ${refs}`,
+    '',
+    '## 1) Event Brief',
+    `Stage ${stage} coverage expansion candidate for validator-driven corpus balancing.`,
+    '',
+    '## 2) Candidate Strategy / Prompt',
+    `Primary typography path: ${method}`,
+    '```text',
+    'poster composition with strong hierarchy, textless plate, matte paper, halftone, ink bleed, zero glow, no photorealism',
+    '```',
+    '',
+    '## 3) Critique Mapping',
+    '| Check | Rule | Pass/Fail | Notes |',
+    '|---|---|---|---|',
+    '| Visual hierarchy | §3.1 | Pass | clear focal structure |',
+    '| Typography control | §4.2 | Pass | method-aligned execution |',
+    '| Material authenticity | §5.1 | Pass | analog print constraints preserved |',
+    '',
+    '## 4) Final Result',
+    'Draft validated for stage coverage; iterate against stage-specific objectives.',
+    '',
+    '## 5) Lesson Captured',
+    `Adds explicit Stage ${stage} representation to improve corpus breadth and checkpoint recall.`,
+    '',
+    '## 6) Technical Manifest',
+    `model: ${stage >= 6 ? 'litellm/ideogram-v4' : 'fal/flux-pro'}`,
+    'seed: TBD',
+    'size: TBD'
+  ].join('\n');
+}
+
+function buildStageExpansionPlan(stageSetInput) {
+  const represented = new Set(Array.from(stageSetInput).map((s) => {
+    const m = String(s).match(/Stage\s*(\d+)/i);
+    return m ? Number(m[1]) : null;
+  }).filter(Boolean));
+
+  const missing = targetStages.filter((s) => !represented.has(s));
+  return missing.map((stage) => ({
+    stage: `Stage ${stage}`,
+    priority: stage <= 2 ? 'high' : stage >= 7 ? 'medium' : 'low',
+    rationale: stage <= 2
+      ? 'Early-pipeline checkpoints are underrepresented and improve upstream prompt/brief conditioning.'
+      : stage >= 7
+        ? 'Late-stage checkpoint improves final gate and acceptance behavior coverage.'
+        : 'Completes mid-pipeline checkpoint breadth.',
+    suggestedExampleType: stage === 5 ? 'negative' : 'positive',
+    suggestedPath: `examples/example-stage-${String(stage).padStart(2, '0')}-coverage.md`,
+    templateStub: buildStageStub(stage)
+  }));
 }
 
 function getGitHead() {
@@ -718,10 +781,20 @@ trendPoint.diffFromPreviousDistinct = {
 trends.history.push(trendPoint);
 if (trends.history.length > 50) trends.history = trends.history.slice(-50);
 
+report.remediation = Array.from(remediationMap.values())
+  .sort((a, b) => (a.priority === b.priority ? (a.file || '').localeCompare(b.file || '') : (a.priority === 'high' ? -1 : 1)));
+
+report.improvementPlan = improvementCandidates
+  .sort((a, b) => b.estimatedImpactPoints - a.estimatedImpactPoints || a.currentScore - b.currentScore)
+  .slice(0, 8);
+
+report.stageExpansionPlan = buildStageExpansionPlan(stageSet).slice(0, 7);
+
 report.summary = {
   examples: exampleFiles.length,
   distinctStandardsRefs: distinctRuleRefs.size,
   representedStages: Array.from(stageSet).sort(),
+  missingStages: report.stageExpansionPlan.map((s) => s.stage),
   overallScore,
   errors: report.errors.length,
   warnings: report.warnings.length,
@@ -729,13 +802,6 @@ report.summary = {
   previousDistinctHead: previousDistinct?.gitHead || null,
   changedFilesSincePreviousDistinct: changedFiles.length
 };
-
-report.remediation = Array.from(remediationMap.values())
-  .sort((a, b) => (a.priority === b.priority ? (a.file || '').localeCompare(b.file || '') : (a.priority === 'high' ? -1 : 1)));
-
-report.improvementPlan = improvementCandidates
-  .sort((a, b) => b.estimatedImpactPoints - a.estimatedImpactPoints || a.currentScore - b.currentScore)
-  .slice(0, 8);
 
 fs.mkdirSync(REPORTS_DIR, { recursive: true });
 fs.writeFileSync(REPORT_PATH, JSON.stringify(report, null, 2));
@@ -757,6 +823,10 @@ if (delta !== null) {
 if (report.improvementPlan.length > 0) {
   const top = report.improvementPlan[0];
   console.log(`Top next-best improvement: ${top.file} (+~${top.estimatedImpactPoints} impact)`);
+}
+if (report.stageExpansionPlan.length > 0) {
+  const topStage = report.stageExpansionPlan[0];
+  console.log(`Top stage expansion target: ${topStage.stage} (${topStage.priority})`);
 }
 console.log(`Report: ${path.relative(ROOT, REPORT_PATH)}`);
 console.log(`Trends: ${path.relative(ROOT, TRENDS_PATH)}`);
