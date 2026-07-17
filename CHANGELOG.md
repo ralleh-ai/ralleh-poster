@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.11.0 - 2026-07-17
+- Phase 11 stage-targeted next-best-improvement prioritization completed.
+- `validation-report.json` now includes `improvementPlan` ranked by expected score impact.
+- Added per-example expected-impact modeling based on stage budgets, type thresholds, and metric gaps.
+- `publish-validation-summary` now renders a "Next-Best Improvements" section with actionable ranked steps.
+- Validator CLI output now surfaces top next-best improvement candidate.
+
 ## 2.10.0 - 2026-07-17
 - Phase 10 commit-range diffing and regression hinting completed.
 - `validate-content` now computes trend delta against previous distinct commit head (not same-commit reruns).

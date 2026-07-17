@@ -40,11 +40,12 @@ const stageBudgets = {
 
 const report = {
   generatedAt: new Date().toISOString(),
-  version: '2.10.0',
+  version: '2.11.0',
   status: 'pass',
   errors: [],
   warnings: [],
   remediation: [],
+  improvementPlan: [],
   summary: {},
   policies: {
     exampleTypeThresholds,
@@ -136,6 +137,41 @@ function scoreExample({ hasAllSections, refsCount, keywordHits, critiqueRows, me
   score += metadataConsistent ? 10 : 0;
   score += hasMethod ? 5 : 0;
   return Math.min(100, score);
+}
+
+function buildImprovementCandidate({ rel, type, stageName, score, budget, refsCount, keywordHits, critiqueRows }) {
+  const typeWarn = type && exampleTypeThresholds[type] ? exampleTypeThresholds[type].warn : 88;
+  const gaps = {
+    refsToWarnBudget: Math.max(0, budget.warn.refs - refsCount),
+    keywordsToWarnBudget: Math.max(0, budget.warn.keywordHits - keywordHits),
+    critiqueRowsToWarnBudget: Math.max(0, budget.warn.critiqueRows - critiqueRows),
+    scoreToTypeWarnThreshold: Math.max(0, typeWarn - score)
+  };
+
+  const estimatedImpactPoints =
+    gaps.refsToWarnBudget * 3 +
+    gaps.keywordsToWarnBudget * 4 +
+    gaps.critiqueRowsToWarnBudget * 3 +
+    Math.ceil(gaps.scoreToTypeWarnThreshold / 2);
+
+  if (estimatedImpactPoints <= 0) return null;
+
+  const actions = [];
+  if (gaps.refsToWarnBudget > 0) actions.push(`Add ${gaps.refsToWarnBudget}+ standards references in metadata/critique mapping.`);
+  if (gaps.keywordsToWarnBudget > 0) actions.push(`Add ${gaps.keywordsToWarnBudget}+ anti-slop keywords in prompt block.`);
+  if (gaps.critiqueRowsToWarnBudget > 0) actions.push(`Add ${gaps.critiqueRowsToWarnBudget}+ critique mapping rows.`);
+  if (gaps.scoreToTypeWarnThreshold > 0) actions.push(`Raise score by ~${gaps.scoreToTypeWarnThreshold} to meet ${type || 'default'} warn threshold (${typeWarn}).`);
+
+  return {
+    file: rel,
+    type,
+    stage: stageName,
+    currentScore: score,
+    targetScore: typeWarn,
+    estimatedImpactPoints,
+    gaps,
+    actions
+  };
 }
 
 function getGitHead() {
@@ -320,6 +356,7 @@ if (exampleFiles.length < 6) {
 
 const distinctRuleRefs = new Set();
 const stageSet = new Set();
+const improvementCandidates = [];
 let totalScore = 0;
 
 for (const name of exampleFiles) {
@@ -515,6 +552,18 @@ for (const name of exampleFiles) {
     }
   }
 
+  const candidate = buildImprovementCandidate({
+    rel,
+    type,
+    stageName,
+    score,
+    budget,
+    refsCount: refs.length,
+    keywordHits: bestKeywordHits,
+    critiqueRows
+  });
+  if (candidate) improvementCandidates.push(candidate);
+
   report.examples.push({
     file: rel,
     score,
@@ -684,6 +733,10 @@ report.summary = {
 report.remediation = Array.from(remediationMap.values())
   .sort((a, b) => (a.priority === b.priority ? (a.file || '').localeCompare(b.file || '') : (a.priority === 'high' ? -1 : 1)));
 
+report.improvementPlan = improvementCandidates
+  .sort((a, b) => b.estimatedImpactPoints - a.estimatedImpactPoints || a.currentScore - b.currentScore)
+  .slice(0, 8);
+
 fs.mkdirSync(REPORTS_DIR, { recursive: true });
 fs.writeFileSync(REPORT_PATH, JSON.stringify(report, null, 2));
 fs.writeFileSync(TRENDS_PATH, JSON.stringify(trends, null, 2));
@@ -700,6 +753,10 @@ if (delta !== null) {
   const sign = delta > 0 ? '+' : '';
   console.log(`Trend delta from previous distinct commit: ${sign}${delta}`);
   console.log(`Changed files since previous distinct commit: ${changedFiles.length}`);
+}
+if (report.improvementPlan.length > 0) {
+  const top = report.improvementPlan[0];
+  console.log(`Top next-best improvement: ${top.file} (+~${top.estimatedImpactPoints} impact)`);
 }
 console.log(`Report: ${path.relative(ROOT, REPORT_PATH)}`);
 console.log(`Trends: ${path.relative(ROOT, TRENDS_PATH)}`);

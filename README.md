@@ -67,10 +67,11 @@ npm run validate:trends
 npm run validate:publish
 ```
 
-Phase 9+10 reporting artifacts:
+Phase 9–11 reporting artifacts:
 - `reports/validation-summary.md` (human-friendly markdown summary)
 - `reports/quality-badges.json` (badge metadata for automation)
-- `reports/validation-trends.json` now includes commit-range diff metadata and regression hints
+- `reports/validation-trends.json` includes commit-range diff metadata and regression hints
+- `reports/validation-report.json` includes `improvementPlan` with expected-impact prioritized next steps
 - CI appends summary to GitHub job summary and uploads all report artifacts
 
 ## ⚙️ Installation & Usage

@@ -93,6 +93,7 @@ const topRemediation = (report.remediation || []).slice(0, 5);
 const topWeakExamples = [...(report.examples || [])]
   .sort((a, b) => a.score - b.score)
   .slice(0, 3);
+const topImprovementPlan = (report.improvementPlan || []).slice(0, 5);
 
 const latestRegressionHint = Array.isArray(trends.regressionHints) && trends.regressionHints.length > 0
   ? trends.regressionHints[trends.regressionHints.length - 1]
@@ -138,6 +139,18 @@ if (topRemediation.length === 0) {
 } else {
   topRemediation.forEach((r) => {
     lines.push('- **[' + r.priority + ']** `' + r.file + '` — ' + r.issue + ' → ' + r.action);
+  });
+}
+lines.push('');
+
+lines.push('## Next-Best Improvements (Expected Impact)');
+lines.push('');
+if (topImprovementPlan.length === 0) {
+  lines.push('- none');
+} else {
+  topImprovementPlan.forEach((p, i) => {
+    lines.push((i + 1) + '. `' + p.file + '` (stage: ' + p.stage + ', type: ' + (p.type || 'n/a') + ') — current ' + p.currentScore + ', target ' + p.targetScore + ', expected impact +~' + p.estimatedImpactPoints);
+    (p.actions || []).slice(0, 3).forEach((a) => lines.push('   - ' + a));
   });
 }
 lines.push('');
