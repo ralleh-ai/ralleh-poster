@@ -22,6 +22,10 @@ const requiredExampleSections = [
 ];
 
 const targetStages = [1, 2, 3, 4, 5, 6, 7];
+const stageCoverageLock = {
+  enabled: true,
+  requiredStages: targetStages.map((s) => `Stage ${s}`)
+};
 
 const antiSlopKeywords = [
   'textless plate', 'zero digital rendering', 'zero plastic', 'matte paper', 'halftone', 'ink bleed',
@@ -42,7 +46,7 @@ const stageBudgets = {
 
 const report = {
   generatedAt: new Date().toISOString(),
-  version: '2.12.0',
+  version: '2.16.0',
   status: 'pass',
   errors: [],
   warnings: [],
@@ -53,7 +57,8 @@ const report = {
   policies: {
     exampleTypeThresholds,
     stageBudgets,
-    targetStages
+    targetStages,
+    stageCoverageLock
   },
   examples: []
 };
@@ -789,6 +794,16 @@ report.improvementPlan = improvementCandidates
   .slice(0, 8);
 
 report.stageExpansionPlan = buildStageExpansionPlan(stageSet).slice(0, 7);
+
+if (stageCoverageLock.enabled && report.stageExpansionPlan.length > 0) {
+  const missing = report.stageExpansionPlan.map((s) => s.stage).join(', ');
+  addError(`Stage coverage lock failed: missing required checkpoints (${missing})`, {
+    file: 'examples/',
+    issue: 'stage coverage lock failed',
+    action: 'Add or promote examples until Stage 1..7 are all represented in canonical example files.',
+    priority: 'high'
+  });
+}
 
 report.summary = {
   examples: exampleFiles.length,

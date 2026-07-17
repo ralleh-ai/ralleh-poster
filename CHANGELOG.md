@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.16.0 - 2026-07-17
+- Phase 16 stage-coverage lock policy enforcement completed.
+- Added strict stage coverage lock in validator policy (`stageCoverageLock`) requiring Stage 1..7 representation.
+- Validator now fails with a high-priority error if any stage checkpoint is missing from canonical examples.
+- Extended report policy payload to include `stageCoverageLock` config for traceable CI governance.
+
 ## 2.15.0 - 2026-07-17
 - Phase 15 stage-7 completion and full stage coverage closure.
 - Hardened Stage 7 draft quality for guarded promotion (added standards density + deeper critique mapping).
