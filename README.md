@@ -32,6 +32,19 @@ This repository is optimized for two outcomes:
 
 ---
 
+## ✅ Validation & CI
+
+Run local validation:
+
+```bash
+npm run validate
+```
+
+CI enforcement:
+- GitHub Actions workflow at `.github/workflows/validate.yml`
+- Runs on push to `main` and on pull requests
+- Fails the build when schema/content checks fail
+
 ## ⚙️ Installation & Usage
 
 ### OpenClaw Gateway Integration
