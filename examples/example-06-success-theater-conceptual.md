@@ -2,7 +2,7 @@
 
 - Outcome: Success
 - Example Type: Positive
-- Primary Stage Checkpoint: Stage 5
+- Primary Stage Checkpoint: Stage 3
 - Primary Rules Referenced: §1.1, §2.1, §3.1, §4.2, §5.2, §6.2
 
 ## 1) Event Brief

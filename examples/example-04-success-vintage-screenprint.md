@@ -2,7 +2,7 @@
 
 - Outcome: Success
 - Example Type: Positive
-- Primary Stage Checkpoint: Stage 5
+- Primary Stage Checkpoint: Stage 6
 - Primary Rules Referenced: §1.1, §1.2, §3.1, §4.1, §5.1, §6.2
 
 ## 1) Event Brief
@@ -21,7 +21,7 @@
 
 **Prompt used:**
 ```text
-An authentic 1970s concert gig poster plate. Handcrafted silkscreen print style, textured Risograph overlay, visible ink bleed, subtle dot halftone patterns, and warm oatmeal paper grain. A central stylized graphic of a lone coyote silhouette in charcoal black, howling against a massive flat burnt orange sun. Deep dusty turquoise sky backdrop. The bottom 25% of the canvas is clean oatmeal paper texture. Zero digital rendering, zero plastic gloss, no volumetric lighting, no lens flares. Textless plate. Aspect ratio 2:3.
+An authentic 1970s concert gig poster plate. Handcrafted silkscreen print style, textured Risograph overlay, visible ink bleed, subtle dot halftone patterns, and warm oatmeal matte paper grain. A central stylized graphic of a lone coyote silhouette in charcoal black, howling against a massive flat burnt orange sun. Deep dusty turquoise sky backdrop. The bottom 25% of the canvas is clean oatmeal paper texture. Zero digital rendering, zero plastic gloss, zero glow, no volumetric lighting, no lens flares, no photorealism, no 3D. Textless plate. Aspect ratio 2:3.
 ```
 
 ## 3) Critique Mapping

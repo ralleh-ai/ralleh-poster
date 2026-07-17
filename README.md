@@ -53,7 +53,7 @@ Phase 4–7 semantic enforcement now validates:
 - explicit typography method declaration (Method A or Method B)
 - weighted per-example quality scoring (0–100)
 - per-example-type thresholds (Positive/Negative)
-- stage-level quality budget thresholds (Stage 5/6/7 and default)
+- stage-level quality budget thresholds (default + stage-specific budgets)
 - overall corpus score threshold
 - machine-readable report artifact at `reports/validation-report.json`
 - actionable remediation suggestions per issue/file

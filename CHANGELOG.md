@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.8.0 - 2026-07-17
+- Phase 8 stage-distribution balancing and warning reduction completed.
+- Rebalanced stage checkpoint distribution across examples (now includes Stage 3/4/5/6 representation).
+- Strengthened anti-slop prompt constraints and critique mappings in examples to clear stage/type warning budgets.
+- Improved negative typography failure case with stronger standards coverage and recovery critique detail.
+- Validation quality improved to zero warnings with higher corpus score.
+
 ## 2.7.0 - 2026-07-17
 - Phase 7 threshold/budget enforcement completed.
 - Added per-example-type quality thresholds (Positive and Negative) with warn/fail enforcement.

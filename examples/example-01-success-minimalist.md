@@ -21,7 +21,7 @@
 
 **Prompt used:**
 ```text
-A high-end Swiss Minimalist poster plate, mid-century International Typographic Style. Asymmetric grid composition with a single precise flat circle positioned in the upper-right third of the canvas. Solid Off-White Bone #F0EBE0 background, with the circle rendered in flat Ink Charcoal #1A1A1A. Completely flat 2D graphic design. Zero gradients, zero drop shadows, zero glow. Matte paper texture, visible screenprint grain. Textless background plate. Aspect ratio 2:3 portrait.
+A high-end Swiss Minimalist poster plate, mid-century International Typographic Style. Asymmetric grid composition with a single precise flat circle positioned in the upper-right third of the canvas. Solid Off-White Bone #F0EBE0 background, with the circle rendered in flat Ink Charcoal #1A1A1A. Completely flat 2D graphic design, zero digital rendering, zero gradients, zero drop shadows, zero glow, no photorealism, no 3D. Matte paper texture with subtle halftone print grain. Textless plate. Aspect ratio 2:3 portrait.
 ```
 
 ## 3) Critique Mapping
