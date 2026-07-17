@@ -20,10 +20,12 @@ jobs:
       - name: Run validation
         run: npm run validate
 
-      - name: Upload validation report
+      - name: Upload validation report artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: validation-report
-          path: reports/validation-report.json
+          name: validation-reports
+          path: |
+            reports/validation-report.json
+            reports/validation-trends.json
           if-no-files-found: warn

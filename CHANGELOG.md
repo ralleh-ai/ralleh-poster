@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.6.0 - 2026-07-17
+- Phase 6 remediation + trend tracking completed.
+- Added actionable remediation guidance in validation report (`remediation[]` with file/issue/action/priority).
+- Added score trend tracking output at `reports/validation-trends.json` with bounded history.
+- Added trend delta in validation summary and warning on score regression.
+- Updated CI to upload both report artifacts (`validation-report.json`, `validation-trends.json`).
+- Added `npm run validate:trends` helper script.
+
 ## 2.5.0 - 2026-07-17
 - Phase 5 quality scoring and reporting completed.
 - Upgraded validator to weighted quality scoring:

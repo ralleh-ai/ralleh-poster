@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
-const REPORT_PATH = path.join(ROOT, 'reports', 'validation-report.json');
+const REPORTS_DIR = path.join(ROOT, 'reports');
+const REPORT_PATH = path.join(REPORTS_DIR, 'validation-report.json');
+const TRENDS_PATH = path.join(REPORTS_DIR, 'validation-trends.json');
 
 const requiredFiles = [
   'SKILL.md', 'README.md', 'CORE_RULES.md', 'WORKFLOW.md', 'STANDARDS.md', 'TEMPLATES.md',
@@ -25,30 +28,40 @@ const antiSlopKeywords = [
 
 const report = {
   generatedAt: new Date().toISOString(),
-  version: '2.5.0',
+  version: '2.6.0',
   status: 'pass',
   errors: [],
   warnings: [],
+  remediation: [],
   summary: {},
   examples: []
 };
 
-function addError(msg) {
+const remediationMap = new Map();
+
+function addError(msg, suggestion) {
   report.errors.push(msg);
   report.status = 'fail';
+  if (suggestion) reportRemediation(suggestion);
 }
 
-function addWarning(msg) {
+function addWarning(msg, suggestion) {
   report.warnings.push(msg);
+  if (suggestion) reportRemediation(suggestion);
+}
+
+function reportRemediation(item) {
+  const key = `${item.file || 'global'}::${item.issue}`;
+  if (!remediationMap.has(key)) remediationMap.set(key, item);
 }
 
 function read(rel) {
   return fs.readFileSync(path.join(ROOT, rel), 'utf8');
 }
 
-function assertIncludes(rel, needle, msg) {
+function assertIncludes(rel, needle, msg, suggestion) {
   const txt = read(rel);
-  if (!txt.includes(needle)) addError(msg || `${rel} missing expected content: ${needle}`);
+  if (!txt.includes(needle)) addError(msg || `${rel} missing expected content: ${needle}`, suggestion);
 }
 
 function extractMetaLine(txt, key) {
@@ -69,66 +82,165 @@ function countCritiqueRows(txt) {
 
 function scoreExample({ hasAllSections, refsCount, keywordHits, critiqueRows, metadataConsistent, hasMethod }) {
   let score = 0;
-  // schema completeness (25)
   score += hasAllSections ? 25 : 0;
-  // rule refs (20)
   if (refsCount >= 5) score += 20;
   else if (refsCount >= 4) score += 16;
   else if (refsCount >= 3) score += 12;
-  // prompt anti-slop quality (20)
+
   if (keywordHits >= 5) score += 20;
   else if (keywordHits >= 4) score += 16;
   else if (keywordHits >= 3) score += 12;
   else if (keywordHits >= 2) score += 8;
-  // critique depth (20)
+
   if (critiqueRows >= 5) score += 20;
   else if (critiqueRows >= 4) score += 16;
   else if (critiqueRows >= 3) score += 12;
-  // metadata consistency + method declaration (15)
+
   score += metadataConsistent ? 10 : 0;
   score += hasMethod ? 5 : 0;
   return Math.min(100, score);
 }
 
+function getGitHead() {
+  try {
+    return execSync('git rev-parse HEAD', { cwd: ROOT, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+  } catch {
+    return null;
+  }
+}
+
+function getPriorTrend() {
+  try {
+    if (!fs.existsSync(TRENDS_PATH)) return null;
+    return JSON.parse(fs.readFileSync(TRENDS_PATH, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
 // File presence
 for (const rel of requiredFiles) {
-  if (!fs.existsSync(path.join(ROOT, rel))) addError(`Missing required file: ${rel}`);
+  if (!fs.existsSync(path.join(ROOT, rel))) {
+    addError(`Missing required file: ${rel}`, {
+      file: rel,
+      issue: 'missing required file',
+      action: `Create ${rel} or restore it from a previous commit.`,
+      priority: 'high'
+    });
+  }
 }
 
 // SKILL/frontmatter sanity
 const skill = read('SKILL.md');
-if (!/^---\n[\s\S]*\n---\n/m.test(skill)) addError('SKILL.md missing valid frontmatter block');
-assertIncludes('SKILL.md', 'name: ralleh-poster', 'SKILL.md missing canonical skill name');
-assertIncludes('SKILL.md', 'metadata: {"openclaw"', 'SKILL.md missing single-line metadata.openclaw object');
+if (!/^---\n[\s\S]*\n---\n/m.test(skill)) {
+  addError('SKILL.md missing valid frontmatter block', {
+    file: 'SKILL.md',
+    issue: 'invalid frontmatter',
+    action: 'Add a YAML frontmatter block bounded by --- at top of file.',
+    priority: 'high'
+  });
+}
+assertIncludes('SKILL.md', 'name: ralleh-poster', 'SKILL.md missing canonical skill name', {
+  file: 'SKILL.md',
+  issue: 'missing canonical skill name',
+  action: 'Set frontmatter name to: name: ralleh-poster',
+  priority: 'high'
+});
+assertIncludes('SKILL.md', 'metadata: {"openclaw"', 'SKILL.md missing single-line metadata.openclaw object', {
+  file: 'SKILL.md',
+  issue: 'missing metadata.openclaw object',
+  action: 'Add single-line metadata JSON object: metadata: {"openclaw":{...}}',
+  priority: 'high'
+});
 
 // Authority consistency
 for (const rel of requiredAuthorityFiles) {
-  assertIncludes('README.md', rel, `README.md missing authority reference: ${rel}`);
-  assertIncludes('SKILL.md', rel, `SKILL.md missing authority reference: ${rel}`);
-  assertIncludes('LLM_INSTRUCTIONS.md', rel, `LLM_INSTRUCTIONS.md missing authority reference: ${rel}`);
+  assertIncludes('README.md', rel, `README.md missing authority reference: ${rel}`, {
+    file: 'README.md',
+    issue: `missing authority reference ${rel}`,
+    action: `Add ${rel} to README authority chain section.`,
+    priority: 'medium'
+  });
+  assertIncludes('SKILL.md', rel, `SKILL.md missing authority reference: ${rel}`, {
+    file: 'SKILL.md',
+    issue: `missing authority reference ${rel}`,
+    action: `Add ${rel} to SKILL.md authority order.`,
+    priority: 'medium'
+  });
+  assertIncludes('LLM_INSTRUCTIONS.md', rel, `LLM_INSTRUCTIONS.md missing authority reference: ${rel}`, {
+    file: 'LLM_INSTRUCTIONS.md',
+    issue: `missing authority reference ${rel}`,
+    action: `Include ${rel} in LLM start sequence and authority order.`,
+    priority: 'medium'
+  });
 }
-assertIncludes('llm-reference.md', 'CORE_RULES.md', 'llm-reference.md missing CORE_RULES.md pointer');
-assertIncludes('examples/README.md', 'FEW_SHOT_TEMPLATE.md', 'examples/README.md missing FEW_SHOT_TEMPLATE.md reference');
+assertIncludes('llm-reference.md', 'CORE_RULES.md', 'llm-reference.md missing CORE_RULES.md pointer', {
+  file: 'llm-reference.md',
+  issue: 'missing core rules pointer',
+  action: 'Add CORE_RULES.md pointer in compact reference.',
+  priority: 'medium'
+});
+assertIncludes('examples/README.md', 'FEW_SHOT_TEMPLATE.md', 'examples/README.md missing FEW_SHOT_TEMPLATE.md reference', {
+  file: 'examples/README.md',
+  issue: 'missing template reference',
+  action: 'Add FEW_SHOT_TEMPLATE.md as required structure reference.',
+  priority: 'medium'
+});
 
 // Model naming consistency
 const noLegacy = ['WORKFLOW.md', 'TOOLS.md', 'STANDARDS.md', 'docs/ideogram-integration.md', 'examples/example-05-failure-typography.md'];
 for (const rel of noLegacy) {
   const txt = read(rel);
-  if (/\bideogram\/v2\b/.test(txt)) addError(`${rel} contains legacy model name ideogram/v2`);
-  if (/\blitellm\/ideogram-v2\b/.test(txt)) addError(`${rel} contains legacy model name litellm/ideogram-v2`);
+  if (/\bideogram\/v2\b/.test(txt)) {
+    addError(`${rel} contains legacy model name ideogram/v2`, {
+      file: rel,
+      issue: 'legacy model token ideogram/v2',
+      action: 'Replace ideogram/v2 with litellm/ideogram-v4.',
+      priority: 'high'
+    });
+  }
+  if (/\blitellm\/ideogram-v2\b/.test(txt)) {
+    addError(`${rel} contains legacy model name litellm/ideogram-v2`, {
+      file: rel,
+      issue: 'legacy model token litellm/ideogram-v2',
+      action: 'Replace litellm/ideogram-v2 with litellm/ideogram-v4.',
+      priority: 'high'
+    });
+  }
 }
-assertIncludes('TOOLS.md', 'litellm/ideogram-v4', 'TOOLS.md missing canonical Method B model litellm/ideogram-v4');
-assertIncludes('TOOLS.md', 'fal/flux-pro', 'TOOLS.md missing canonical Method A model fal/flux-pro');
-assertIncludes('WORKFLOW.md', 'litellm/ideogram-v4', 'WORKFLOW.md missing canonical Method B model litellm/ideogram-v4');
+assertIncludes('TOOLS.md', 'litellm/ideogram-v4', 'TOOLS.md missing canonical Method B model litellm/ideogram-v4', {
+  file: 'TOOLS.md',
+  issue: 'missing method B model',
+  action: 'Declare Method B model as litellm/ideogram-v4.',
+  priority: 'high'
+});
+assertIncludes('TOOLS.md', 'fal/flux-pro', 'TOOLS.md missing canonical Method A model fal/flux-pro', {
+  file: 'TOOLS.md',
+  issue: 'missing method A model',
+  action: 'Declare Method A model as fal/flux-pro.',
+  priority: 'high'
+});
+assertIncludes('WORKFLOW.md', 'litellm/ideogram-v4', 'WORKFLOW.md missing canonical Method B model litellm/ideogram-v4', {
+  file: 'WORKFLOW.md',
+  issue: 'missing method B model',
+  action: 'Update Stage 6 model selection to litellm/ideogram-v4.',
+  priority: 'high'
+});
 
 // Example validation + weighted scoring
 const examplesDir = path.join(ROOT, 'examples');
 const exampleFiles = fs.readdirSync(examplesDir).filter((f) => /^example-\d{2}-.*\.md$/.test(f)).sort();
-if (exampleFiles.length < 6) addError(`Expected at least 6 example files, found ${exampleFiles.length}`);
+if (exampleFiles.length < 6) {
+  addError(`Expected at least 6 example files, found ${exampleFiles.length}`, {
+    file: 'examples/',
+    issue: 'insufficient example count',
+    action: 'Add enough example files to reach minimum of 6.',
+    priority: 'high'
+  });
+}
 
 const distinctRuleRefs = new Set();
 let totalScore = 0;
-
 for (const name of exampleFiles) {
   const rel = path.join('examples', name);
   const txt = read(rel);
@@ -139,7 +251,12 @@ for (const name of exampleFiles) {
     if (!txt.includes(section)) {
       hasAllSections = false;
       issues.errors.push(`missing required section: ${section}`);
-      addError(`${rel} missing required section: ${section}`);
+      addError(`${rel} missing required section: ${section}`, {
+        file: rel,
+        issue: `missing section ${section}`,
+        action: `Insert section heading exactly as required by FEW_SHOT_TEMPLATE.md: ${section}`,
+        priority: 'high'
+      });
     }
   }
 
@@ -147,91 +264,148 @@ for (const name of exampleFiles) {
   const type = extractMetaLine(txt, 'Example Type');
   const rules = extractMetaLine(txt, 'Primary Rules Referenced');
 
-  if (!outcome) { issues.errors.push('missing Outcome metadata'); addError(`${rel} missing Outcome metadata`); }
-  if (!type) { issues.errors.push('missing Example Type metadata'); addError(`${rel} missing Example Type metadata`); }
-  if (!rules) { issues.errors.push('missing Primary Rules Referenced metadata'); addError(`${rel} missing Primary Rules Referenced metadata`); }
+  if (!outcome) addError(`${rel} missing Outcome metadata`, { file: rel, issue: 'missing outcome metadata', action: 'Add - Outcome: Success|Failure ...', priority: 'high' });
+  if (!type) addError(`${rel} missing Example Type metadata`, { file: rel, issue: 'missing type metadata', action: 'Add - Example Type: Positive|Negative', priority: 'high' });
+  if (!rules) addError(`${rel} missing Primary Rules Referenced metadata`, { file: rel, issue: 'missing rules metadata', action: 'Add - Primary Rules Referenced with § references.', priority: 'high' });
 
   const refs = rules.match(/§\d+\.\d+/g) || [];
   refs.forEach((r) => distinctRuleRefs.add(r));
-
   if (refs.length < 3) {
     issues.errors.push('must reference at least 3 standards sections');
-    addError(`${rel} must reference at least 3 standards sections`);
+    addError(`${rel} must reference at least 3 standards sections`, {
+      file: rel,
+      issue: 'low standards reference density',
+      action: 'Add at least 3 explicit STANDARDS.md section references in metadata and critique mapping.',
+      priority: 'high'
+    });
   } else if (refs.length < 4) {
     issues.warnings.push('low standards reference density (<4)');
-    addWarning(`${rel} warning: low standards reference density (<4)`);
+    addWarning(`${rel} warning: low standards reference density (<4)`, {
+      file: rel,
+      issue: 'standards coverage could be stronger',
+      action: 'Add one more STANDARDS.md section reference to increase coverage depth.',
+      priority: 'medium'
+    });
   }
 
   const positiveMismatch = /positive/i.test(type) && !/success/i.test(outcome);
   const negativeMismatch = /negative/i.test(type) && !/failure/i.test(outcome);
   const metadataConsistent = !positiveMismatch && !negativeMismatch;
 
-  if (positiveMismatch) { issues.errors.push('type/outcome mismatch (Positive without Success)'); addError(`${rel} has Example Type Positive but Outcome is not Success`); }
-  if (negativeMismatch) { issues.errors.push('type/outcome mismatch (Negative without Failure)'); addError(`${rel} has Example Type Negative but Outcome does not include Failure`); }
+  if (positiveMismatch) addError(`${rel} has Example Type Positive but Outcome is not Success`, {
+    file: rel,
+    issue: 'metadata mismatch',
+    action: 'Align Outcome and Example Type (Positive→Success, Negative→Failure).',
+    priority: 'high'
+  });
+  if (negativeMismatch) addError(`${rel} has Example Type Negative but Outcome does not include Failure`, {
+    file: rel,
+    issue: 'metadata mismatch',
+    action: 'Align Outcome and Example Type (Positive→Success, Negative→Failure).',
+    priority: 'high'
+  });
 
   const hasMethod = /Method\s*[AB]/.test(txt);
-  if (!hasMethod) { issues.errors.push('missing explicit Method A/B declaration'); addError(`${rel} must explicitly specify typography Method A or Method B`); }
+  if (!hasMethod) addError(`${rel} must explicitly specify typography Method A or Method B`, {
+    file: rel,
+    issue: 'missing typography method',
+    action: 'Add explicit Method A or Method B declaration in strategy section.',
+    priority: 'high'
+  });
 
   const promptBlocks = getPromptBlocks(txt);
   if (promptBlocks.length === 0) {
-    issues.errors.push('missing ```text prompt block');
-    addError(`${rel} must include at least one \`\`\`text prompt block`);
+    addError(`${rel} must include at least one \`\`\`text prompt block`, {
+      file: rel,
+      issue: 'missing prompt block',
+      action: 'Add at least one fenced ```text prompt block.',
+      priority: 'high'
+    });
   }
 
   const bestKeywordHits = Math.max(0, ...promptBlocks.map((p) => antiSlopKeywords.filter((k) => p.includes(k)).length));
   if (bestKeywordHits < 2) {
-    issues.errors.push('prompt anti-slop quality too weak (<2 keywords)');
-    addError(`${rel} prompt quality too weak: expected at least 2 anti-slop keywords in a prompt block`);
+    addError(`${rel} prompt quality too weak: expected at least 2 anti-slop keywords in a prompt block`, {
+      file: rel,
+      issue: 'anti-slop keyword density too low',
+      action: 'Add anti-slop terms like "textless plate", "zero glow", "matte paper", "no photorealism".',
+      priority: 'high'
+    });
   } else if (bestKeywordHits < 4) {
-    issues.warnings.push('prompt anti-slop density moderate (<4 keywords)');
-    addWarning(`${rel} warning: prompt anti-slop density moderate (<4 keywords)`);
+    addWarning(`${rel} warning: prompt anti-slop density moderate (<4 keywords)`, {
+      file: rel,
+      issue: 'anti-slop keyword density moderate',
+      action: 'Increase anti-slop constraints to at least 4 keywords for stronger prompt resilience.',
+      priority: 'medium'
+    });
   }
 
   const critiqueRows = countCritiqueRows(txt);
   if (critiqueRows < 3) {
-    issues.errors.push('critique mapping too shallow (<3 rows)');
-    addError(`${rel} critique mapping must include at least 3 rule checks`);
+    addError(`${rel} critique mapping must include at least 3 rule checks`, {
+      file: rel,
+      issue: 'critique mapping too shallow',
+      action: 'Add at least 3 critique mapping table rows with standards references.',
+      priority: 'high'
+    });
   } else if (critiqueRows < 4) {
-    issues.warnings.push('critique mapping depth moderate (<4 rows)');
-    addWarning(`${rel} warning: critique mapping depth moderate (<4 rows)`);
+    addWarning(`${rel} warning: critique mapping depth moderate (<4 rows)`, {
+      file: rel,
+      issue: 'critique mapping depth moderate',
+      action: 'Add one more critique check row to strengthen evaluative depth.',
+      priority: 'medium'
+    });
   }
 
   if (/negative/i.test(type) && !/fail/i.test(txt.toLowerCase())) {
-    issues.errors.push('negative example does not explicitly show failure detection');
-    addError(`${rel} is Negative but does not explicitly show failure detection`);
+    addError(`${rel} is Negative but does not explicitly show failure detection`, {
+      file: rel,
+      issue: 'negative case lacks failure signal',
+      action: 'Add explicit failure verdict language (e.g., "Failed at Stage 5").',
+      priority: 'high'
+    });
   }
 
-  const score = scoreExample({
-    hasAllSections,
-    refsCount: refs.length,
-    keywordHits: bestKeywordHits,
-    critiqueRows,
-    metadataConsistent,
-    hasMethod
-  });
-
+  const score = scoreExample({ hasAllSections, refsCount: refs.length, keywordHits: bestKeywordHits, critiqueRows, metadataConsistent, hasMethod });
   totalScore += score;
-  if (score < 70) addError(`${rel} quality score too low (${score}/100)`);
-  else if (score < 85) addWarning(`${rel} quality score moderate (${score}/100)`);
+
+  if (score < 70) {
+    addError(`${rel} quality score too low (${score}/100)`, {
+      file: rel,
+      issue: 'example quality score below fail threshold',
+      action: 'Improve missing sections, standards refs, anti-slop terms, and critique depth to reach >=70.',
+      priority: 'high'
+    });
+  } else if (score < 85) {
+    addWarning(`${rel} quality score moderate (${score}/100)`, {
+      file: rel,
+      issue: 'example quality score in warning range',
+      action: 'Raise standards refs and anti-slop density to target >=85.',
+      priority: 'medium'
+    });
+  }
 
   report.examples.push({
     file: rel,
     score,
-    metrics: {
-      standardsRefs: refs.length,
-      antiSlopKeywordHits: bestKeywordHits,
-      critiqueRows,
-      hasMethod,
-      metadataConsistent
-    },
-    ...issues
+    metrics: { standardsRefs: refs.length, antiSlopKeywordHits: bestKeywordHits, critiqueRows, hasMethod, metadataConsistent }
   });
 }
 
 if (distinctRuleRefs.size < 8) {
-  addError(`Example corpus rule coverage too narrow: only ${distinctRuleRefs.size} distinct standards refs found (min 8)`);
+  addError(`Example corpus rule coverage too narrow: only ${distinctRuleRefs.size} distinct standards refs found (min 8)`, {
+    file: 'examples/',
+    issue: 'corpus standards coverage too narrow',
+    action: 'Increase diversity of § references across examples to at least 8 distinct sections.',
+    priority: 'high'
+  });
 } else if (distinctRuleRefs.size < 10) {
-  addWarning(`Example corpus rule coverage moderate: ${distinctRuleRefs.size} distinct standards refs`);
+  addWarning(`Example corpus rule coverage moderate: ${distinctRuleRefs.size} distinct standards refs`, {
+    file: 'examples/',
+    issue: 'corpus standards coverage moderate',
+    action: 'Expand examples to reference 10+ distinct standards sections.',
+    priority: 'medium'
+  });
 }
 
 // Markdown local link check
@@ -254,30 +428,93 @@ for (const file of mdFiles) {
     const target = raw.split('#')[0];
     if (!target) continue;
     const resolved = path.normalize(path.join(path.dirname(file), target));
-    if (!fs.existsSync(resolved)) addError(`${path.relative(ROOT, file)} has broken local link: ${raw}`);
+    if (!fs.existsSync(resolved)) {
+      addError(`${path.relative(ROOT, file)} has broken local link: ${raw}`, {
+        file: path.relative(ROOT, file),
+        issue: 'broken local markdown link',
+        action: `Fix or remove broken link target: ${raw}`,
+        priority: 'high'
+      });
+    }
   }
 }
 
 const overallScore = exampleFiles.length ? Math.round(totalScore / exampleFiles.length) : 0;
-if (overallScore < 75) addError(`Overall quality score too low (${overallScore}/100)`);
-else if (overallScore < 88) addWarning(`Overall quality score moderate (${overallScore}/100)`);
+if (overallScore < 75) {
+  addError(`Overall quality score too low (${overallScore}/100)`, {
+    file: 'examples/',
+    issue: 'overall corpus score below fail threshold',
+    action: 'Improve low-scoring examples until corpus average is >=75.',
+    priority: 'high'
+  });
+} else if (overallScore < 88) {
+  addWarning(`Overall quality score moderate (${overallScore}/100)`, {
+    file: 'examples/',
+    issue: 'overall corpus score in warning range',
+    action: 'Target corpus average >=88 by improving medium-scoring examples.',
+    priority: 'medium'
+  });
+}
+
+// Trend tracking
+const previous = getPriorTrend();
+const head = getGitHead();
+const trendPoint = {
+  generatedAt: report.generatedAt,
+  gitHead: head,
+  overallScore,
+  errors: report.errors.length,
+  warnings: report.warnings.length,
+  examples: exampleFiles.length,
+  distinctStandardsRefs: distinctRuleRefs.size
+};
+
+let trends = { history: [] };
+if (previous && Array.isArray(previous.history)) trends = previous;
+trends.history.push(trendPoint);
+if (trends.history.length > 50) trends.history = trends.history.slice(-50);
+
+const priorPoint = trends.history.length >= 2 ? trends.history[trends.history.length - 2] : null;
+const delta = priorPoint ? overallScore - priorPoint.overallScore : null;
+
+if (delta !== null) {
+  if (delta < 0) {
+    addWarning(`Quality score regressed by ${Math.abs(delta)} point(s) from previous run`, {
+      file: 'reports/validation-trends.json',
+      issue: 'quality regression',
+      action: 'Review low-scoring examples and recent edits to recover prior score.',
+      priority: 'medium'
+    });
+  }
+}
 
 report.summary = {
   examples: exampleFiles.length,
   distinctStandardsRefs: distinctRuleRefs.size,
   overallScore,
   errors: report.errors.length,
-  warnings: report.warnings.length
+  warnings: report.warnings.length,
+  trendDeltaFromPrevious: delta
 };
 
-fs.mkdirSync(path.dirname(REPORT_PATH), { recursive: true });
+report.remediation = Array.from(remediationMap.values())
+  .sort((a, b) => (a.priority === b.priority ? (a.file || '').localeCompare(b.file || '') : (a.priority === 'high' ? -1 : 1)));
+
+fs.mkdirSync(REPORTS_DIR, { recursive: true });
 fs.writeFileSync(REPORT_PATH, JSON.stringify(report, null, 2));
+fs.writeFileSync(TRENDS_PATH, JSON.stringify(trends, null, 2));
 
 if (report.errors.length > 0) {
   console.error(`❌ Validation failed with ${report.errors.length} error(s) and ${report.warnings.length} warning(s).`);
   console.error(`Report: ${path.relative(ROOT, REPORT_PATH)}`);
+  console.error(`Trends: ${path.relative(ROOT, TRENDS_PATH)}`);
   process.exit(1);
 }
 
 console.log(`✅ Validation passed (score: ${overallScore}/100, warnings: ${report.warnings.length})`);
+if (delta !== null) {
+  const sign = delta > 0 ? '+' : '';
+  console.log(`Trend delta from previous run: ${sign}${delta}`);
+}
 console.log(`Report: ${path.relative(ROOT, REPORT_PATH)}`);
+console.log(`Trends: ${path.relative(ROOT, TRENDS_PATH)}`);
