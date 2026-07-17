@@ -45,6 +45,13 @@ CI enforcement:
 - Runs on push to `main` and on pull requests
 - Fails the build when schema/content checks fail
 
+Phase 4 semantic enforcement now validates:
+- minimum standards reference coverage across examples
+- anti-slop keyword density in prompt blocks
+- critique-table depth per example
+- metadata consistency between Example Type and Outcome
+- explicit typography method declaration (Method A or Method B)
+
 ## ⚙️ Installation & Usage
 
 ### OpenClaw Gateway Integration

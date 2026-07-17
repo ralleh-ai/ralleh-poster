@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.4.0 - 2026-07-17
+- Phase 4 semantic quality enforcement completed.
+- Expanded `scripts/validate-content.js` with semantic gates:
+  - minimum standards reference count per example
+  - corpus-wide distinct standards coverage threshold
+  - anti-slop keyword density checks in prompt blocks
+  - critique mapping depth requirement
+  - metadata consistency checks (Outcome vs Example Type)
+  - explicit Method A/Method B declaration requirement
+- Updated README validation section to document Phase 4 semantic checks.
+
 ## 2.3.0 - 2026-07-17
 - Phase 3 CI + enforcement completed.
 - Added GitHub Actions validation workflow: `.github/workflows/validate.yml`.
