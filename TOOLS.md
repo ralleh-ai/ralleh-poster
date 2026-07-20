@@ -12,6 +12,21 @@ This document defines the capabilities required, the specific tool invocations e
 
 **Role**: Generate the high-fidelity visual plate for the poster (Stage 6).
 
+### 1.0 Preview-First Policy (mandatory)
+
+Before any full-quality render, run a **thumbnail review round**:
+- default `count=4` preview comps,
+- low-cost review settings,
+- strict anti-slop geometry constraints,
+- requester selects a winner,
+- only then proceed to final render.
+
+For concert scenes, preview prompts must enforce:
+- stage fully visible,
+- crowd below stage sightline,
+- no foreground occlusion crossing performer zone,
+- preserved typography negative space.
+
 ### 🔑 Model Selection Rule of Thumb
 > **Method A (Textless Plate) → `fal/flux-pro`** (best for tactile analog textures and screenprint aesthetics)  
 > **Method B (Direct Text) → `litellm/ideogram-v4`** (best-in-class typography rendering; explicitly prefer this over any other option when text must be baked into the plate)
@@ -25,6 +40,15 @@ Use the `image_generate` tool. Ensure the prompt integrates the anti-slop direct
     *   *For Text-Integrated Plates (Method B)*: Strongly prefer `litellm/ideogram-v4` (or the latest Ideogram version available), or fallback to `openai/dall-e-3`. Ideogram is explicitly optimized for typographic coherence.
 *   **Output Format**: `png` or `webp` for highest quality lossless/near-lossless output. Avoid heavy jpeg compression artifacts that compromise analog film grain or print textures.
 *   **Size**: Explicitly define size per `STANDARDS.md` §6.5 (e.g., `1080x1920` for digital portrait, or a high-res equivalent for print). Use `size` or `aspectRatio` parameters as supported by the provider.
+
+### 1.1.1 Preview Settings (low-rez / thumbnails)
+
+Use these defaults during the thumbnail round:
+- portrait 4:5 aspect ratio,
+- quick review constraints (textless preferred unless user requests preview text),
+- shorter timeout + fast reject loop.
+
+If the provider ignores explicit low-resolution settings, still run the thumbnail-first workflow and downscale previews for review delivery.
 
 ### 1.2 Web AI Chat Integration (Conversational Mode)
 If you are operating in a standard web-chat interface (such as Claude, ChatGPT, Gemini, etc.) and have **native image generation capabilities**, execute generation directly.
@@ -104,6 +128,11 @@ output/
 *   **`design-rationale.md`**: The explanation of creative choices, color palette, and metaphor (output from Stage 7).
 *   **`technical-manifest.md`**: The exact provider, model name, aspect ratio, seed (if available), and final prompt string used for the final generation. This ensures the design can be reproduced or modified later.
 *   **`concepts/*.md`**: The text drafts of the concepts generated in Stage 4.
+
+Include preview lineage in `technical-manifest.md`:
+- preview count,
+- selected thumbnail id,
+- provider route used for preview and final.
 
 ---
 

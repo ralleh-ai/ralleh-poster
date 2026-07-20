@@ -1,136 +1,153 @@
 # Poster Generation Workflow
 
-**Version**: 2.0  
+**Version**: 2.1  
 **Authority**: Execution framework for the Ralleh Poster skill.  
-**Constraint**: Any LLM or agent operating this repository must execute these seven stages sequentially. Do not skip stages. Do not begin generation until Stage 3 is complete. Every stage contains mandatory exit gates that must be satisfied before advancing.
+**Constraint**: Execute these seven stages sequentially. Do not skip stages. Do not begin final-quality generation until Stage 3 is complete. Every stage has mandatory exit gates.
 
-This workflow is designed to prevent generic "AI slop" by forcing the agent to think like a professional designer: gathering context, establishing creative limits, drafting concepts, critiquing ruthlessly, and executing deliberately.
+This workflow prevents generic AI slop by forcing deliberate design decisions, fast preview validation, and strict quality gates.
 
 ---
 
-## Stage 1: Intake (Context Gathering)
+## Stage 1: Intake (Minimal Context Gathering)
 
-Do not make assumptions about event details. Gather raw metadata and establish creative constraints.
+Start with minimal intake to avoid overwhelming the requester.
 
-### 1.1 Checklist
-- [ ] **Event Title**: Exact capitalization, spelling, and punctuation.
-- [ ] **Date/Time**: Correct format (e.g., Day of week, Month Day, Year, start/end time).
-- [ ] **Venue**: Full name, address, and city (or virtual platform).
-- [ ] **Billing / Performers**: Order of importance, secondary names, and sponsors.
-- [ ] **Genre / Event Type**: Categorize (e.g., Music, Theater, Market, Sports).
-- [ ] **Reference Images**: Ask the user if they have reference images or mood boards they wish to upload (e.g., brand guidelines, past posters). Ensure they are ingested into context if provided.
-- [ ] **Style Constraints**: Identify requested style (map to `TEMPLATES.md` if possible) and explicitly note forbidden tropes per `STANDARDS.md` §4.
-- [ ] **Format / Specs**: Intended output medium (Digital/Print, aspect ratio).
+### 1.1 Required Core Facts (must confirm)
+- [ ] **Event Title**: exact capitalization/spelling/punctuation.
+- [ ] **Date/Time**: correct calendar/time format.
+- [ ] **Venue / Location**: name + city (address optional initially).
+- [ ] **Genre / Event Type**.
 
-### 1.2 Exit Gate
-Proceed to Stage 2 only when the Event Title, Date, Venue, and Genre are confirmed by the requester. **If operating in a conversational web UI, stop and ask the user for this information now. Do not proceed until they reply.**
+### 1.2 Optional (defer by default, collect progressively)
+- [ ] Billing / performer order / sponsors
+- [ ] Reference images / mood board
+- [ ] Style constraints
+- [ ] Format / final export specs
+
+### 1.3 Exit Gate
+Proceed to Stage 2 when the 4 core facts are confirmed.
 
 ---
 
 ## Stage 2: Research (Visual Context)
 
-Root the poster in authentic artistic reference points before drafting concepts.
+Root the poster in authentic references before drafting concepts.
 
 ### 2.1 Action Steps
-1. Use web search or internal memory to investigate the visual history of the performer/artist or the event's genre.
-2. Investigate the physical venue or the geographic location for architectural or regional aesthetic hooks.
-3. Identify relevant art movements or analog printing traditions (e.g., 1960s Fillmore screenprints, Bauhaus, Risograph, Swiss Grid).
+1. Investigate visual history of performer/genre.
+2. Investigate venue/geography for architectural hooks.
+3. Identify relevant analog traditions (Fillmore, Bauhaus, Risograph, Swiss grid, etc.).
 
 ### 2.2 Output
-Write a short, text-based "Mood Board" (3-5 bullet points) summarizing recurring colors, visual motifs, and textures that fit the event and comply with `STANDARDS.md`.
+A concise text mood board (3–5 bullets) covering motifs, texture, color tendencies.
 
 ### 2.3 Exit Gate
-Proceed to Stage 3 only when the Mood Board is documented in the session context. **If in a conversational UI, present the Mood Board to the user for approval before continuing.**
+Proceed only when the mood board is documented and acknowledged.
 
 ---
 
 ## Stage 3: Design Strategy (Creative Limits)
 
-Synthesize research into a strict design direction. This is where the poster is intellectually solved before any pixels are generated.
+Solve the poster intellectually before generation.
 
 ### 3.1 Key Decisions
-- **The Core Metaphor**: What singular symbolic element represents the entire event? (Choose one striking icon, abstract shape, or scene. Never depict everything.)
-- **The Style Preset**: Select the most appropriate layout template from `TEMPLATES.md` (or define a custom one that adheres strictly to `STANDARDS.md`).
-- **The Color Palette**: Select exactly 3-4 specific named colors (e.g., "Warm Ochre #C28832, Midnight Navy #142035, Off-White Cream #F5EFE0"). Consult `STANDARDS.md` §5.
-- **Typography Strategy**: Choose Method A (Textless Plate) or Method B (High-Fidelity Short Header) per `STANDARDS.md` §3.1. Decide where text will reside and how legibility will be maintained (e.g., backing panels, negative space).
-- **Format Target**: Finalize resolution/aspect ratio.
+- **Core Metaphor**: one dominant symbol/scene.
+- **Style Preset**: pick from `TEMPLATES.md` (or custom compliant).
+- **Color Palette**: exactly 3–4 colors per `STANDARDS.md` §5.
+- **Typography Strategy**: Method A (textless plate + post-layout) or Method B (short baked-in header).
+- **Format Target**: aspect ratio/resolution.
+- **Preview Plan**: thumbnail-first defaults (4 comps, low-cost review mode, anti-slop geometry constraints).
 
 ### 3.2 Output
-A concise paragraph summarizing the strategy, naming the metaphor, the `TEMPLATES.md` reference, the 3-4 colors, and the typography plan.
+A concise strategy paragraph naming metaphor, template reference, palette, typography method, and preview plan.
 
 ### 3.3 Exit Gate
-Proceed to Stage 4 only when the strategy paragraph is written and explicitly confirms compliance with `STANDARDS.md` color and typography rules. **In a conversational UI, present the strategy to the user for alignment before generating concepts.**
+Proceed to Stage 4 only when strategy explicitly confirms compliance with color + typography rules.
 
 ---
 
 ## Stage 4: Concept Generation (Drafting)
 
-Develop multiple distinct creative angles based on the approved strategy.
+Develop multiple distinct directions from approved strategy.
 
 ### 4.1 Action Steps
-Draft **4 distinct visual concepts** (or user-requested number). Each concept must include:
-- **Title**: A short evocative name for the concept.
-- **Visual Metaphor**: What the plate depicts.
-- **Composition**: How elements are structured (referencing `STANDARDS.md` §6 frameworks).
-- **Prompt Concept**: The exact text description to be sent to the visual model, incorporating the relevant `TEMPLATES.md` prompt block and slop-prevention keywords.
-- **Rationale**: A one-sentence explanation of why this concept fits the event and avoids genre tropes (`STANDARDS.md` §4).
+Draft **4 distinct concepts** (or user-requested count). Each concept must include:
+- **Title**
+- **Visual Metaphor**
+- **Composition** (per `STANDARDS.md` §6)
+- **Prompt Concept** (final-direction prompt intent)
+- **Thumbnail Prompt Variant** (compact, fast review prompt)
+- **Rationale**
 
 ### 4.2 Constraints
-Ensure concepts are truly distinct structural approaches, not minor variations of the same idea. Every concept must be designed to pass the anti-slop criteria (`STANDARDS.md` §1).
+Concepts must be structurally distinct, not minor tweaks.
 
 ### 4.3 Exit Gate
-Proceed to Stage 5 only when all 4 concepts are documented. Present the concepts to the requester for selection. **If operating in a conversational UI, stop here. Ask the user which concept they prefer. Do not proceed to critique or generation until the user has selected a path.** (Unless an automated `--generate` flag is set).
+Present concepts and require requester selection before critique/generation continues.
 
 ---
 
 ## Stage 5: Critique (Objective Scoring)
 
-Evaluate the drafted concepts (or the initial generated candidates if running autonomously) against professional design criteria.
+Evaluate selected concept and generated preview candidates.
 
-### 5.1 Scoring Rubric (Pass/Fail for each)
-1. **Slop Prevention (`STANDARDS.md` §1)**: Is it free of plastic rendering, volumetric overload, cluttered noise, and hallucinated glyphs? Does it exhibit analog tactile quality?
-2. **Hierarchy (`STANDARDS.md` §2)**: Is the Hook clearly dominant? Does the eye know where to go next?
-3. **Typography (`STANDARDS.md` §3)**: Is there a clear, uncluttered zone for text integration? (Or, if Method B is used, is the header perfectly rendered?)
-4. **Color & Composition (`STANDARDS.md` §§5-6)**: Are there only 3-4 colors? Is there at least 30% negative space? Is the main visual anchored?
+### 5.1 Scoring Rubric (Pass/Fail)
+1. **Slop Prevention** (`STANDARDS.md` §1)
+2. **Hierarchy** (`STANDARDS.md` §2)
+3. **Typography Readiness** (`STANDARDS.md` §3)
+4. **Color & Composition** (`STANDARDS.md` §§5–6)
 
 ### 5.2 Action
-Filter out any concept or generated candidate that fails *any* of the four criteria. Select the strongest passing concept.
-
-*   **Calibration Hint**: If you are unsure whether a candidate passes the anti-slop rules, consult the reference cases in `examples/`. Compare your candidate against the failure patterns shown in `example-02` and `example-05`. If your candidate resembles the failures, reject it and refine the prompt.
+Reject any candidate that fails any criterion. Keep strongest passing direction only.
 
 ### 5.3 Exit Gate
-Proceed to Stage 6 only when a single concept has passed the critique rubric and is selected for final execution.
+Proceed to Stage 6 only when a single direction passes rubric and is selected.
 
 ---
 
 ## Stage 6: Refinement (Generation & Iteration)
 
-Execute the selected concept and iterate until the output is flawless.
+Two-phase execution is mandatory.
 
 ### 6.1 Action Steps
-1. **Model Selection**: If the strategy uses Method B (Direct Text), explicitly route the request to a typography-capable model (prefer `litellm/ideogram-v4` or equivalent runtime alias). If Method A (Textless), use a high-fidelity texture model (prefer `fal/flux-pro`).
-2. Execute the image generation using the prompt developed in Stage 4.
-3. Review the resulting plate using vision capabilities (or self-critique).
-4. Check against the Stage 5 rubric. If the image model introduced slop, hallucinated text, or ignored color constraints, *reject the plate*.
-5. Adjust the prompt (e.g., increase weights on anti-slop terms, simplify the metaphor, enforce "textless plate") and regenerate.
-6. Repeat until a plate passes the critique rubric completely.
+#### Phase A — Thumbnail Round (mandatory)
+1. Generate low-cost preview comps (default 4) before any final render.
+2. Apply anti-slop geometry constraints (especially for concert scenes):
+   - stage fully visible/unobstructed,
+   - crowd below stage sightline,
+   - no foreground occlusion crossing performer zone,
+   - preserve negative space for typography.
+3. Critique previews with Stage 5 rubric; reject failures aggressively.
+4. Present previews and require explicit winner selection.
+
+#### Phase B — Final Render
+5. Select model by method:
+   - Method A: prefer `fal/flux-pro` (textless plate)
+   - Method B: prefer `litellm/ideogram-v4` (short baked-in text)
+6. Render from selected preview direction.
+7. Re-check rubric; reject slop/hierarchy failures.
+8. Iterate prompt and regenerate until full pass.
 
 ### 6.2 Exit Gate
-Proceed to Stage 7 only when a generated plate passes the vision-critique for slop, hierarchy, typography space, and color constraints. Never advance a flawed plate. *(Note: If you are a web LLM without native image generation, your exit gate is providing the final refined prompt to the user and asking them to run it).*
+Proceed to Stage 7 only when:
+1. Thumbnail winner is explicitly selected,
+2. Final render passes slop/hierarchy/typography-space/color checks,
+3. Geometry constraints remain intact.
 
 ---
 
 ## Stage 7: Final Output (Delivery & Archiving)
 
-Deliver the final poster and document the design rationale.
+Deliver and document reproducibly.
 
 ### 7.1 Deliverables
-1. **The Poster Asset**: The high-quality image file (in the requested format/resolution).
-2. **Design Rationale**: A short summary explaining the metaphorical choices, typography plan, color selections, and how it avoids slop.
-3. **Technical Manifest**: The exact provider/model used, seed (if applicable), and final generation prompt for reproducibility.
+1. **Poster Asset**
+2. **Design Rationale**
+3. **Technical Manifest** (provider, model, prompt, seed if available, format/size)
+4. **Preview Lineage** (preview count + selected candidate id)
 
 ### 7.2 File Storage
-Save the outputs to the project directory according to the structure defined in `TOOLS.md` §3. Ensure the event slug naming convention is followed.
+Save under `output/<event-slug>/` per `TOOLS.md` conventions.
 
 ### 7.3 Exit Gate
-The workflow is complete when the deliverables are presented to the requester and all files are saved to the defined directory structure.
+Complete when deliverables are presented and saved.
